@@ -1,4 +1,4 @@
-from src.client import *
+from src.client.miner import *
 
 def test_constructor():
     miner = Miner()
