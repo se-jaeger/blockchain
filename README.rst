@@ -1,3 +1,4 @@
+==========
 Blockchain
 ==========
 
@@ -6,7 +7,8 @@ Blockchain implementation in Python.
 
 Build
 =====
-[![Build Status](https://travis-ci.com/se-jaeger/blockchain.svg?token=zzxZGrv6BMyvkUJtbozm&branch=master)](https://travis-ci.com/se-jaeger/blockchain)
+.. image:: https://travis-ci.com/se-jaeger/blockchain.svg?token=zzxZGrv6BMyvkUJtbozm&branch=master
+    :target: https://travis-ci.com/se-jaeger/blockchain
 
 
 Description
