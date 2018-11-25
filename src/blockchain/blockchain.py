@@ -14,7 +14,7 @@ class Blockchain(object):
         path_to_chain = encode_file_path_properly(path_to_chain)
 
         # if local chain exists, load it
-        if os.path.exists(path_to_chain):
+        if os.path.isfile(path_to_chain):
             self.chain = self.__load_chain(path_to_chain)
 
         else:
@@ -30,6 +30,8 @@ class Blockchain(object):
 
     def __load_chain(self, path_to_chain: str) -> list:
 
+        path_to_chain = encode_file_path_properly(path_to_chain)
+
         #
         if not os.path.isfile(path_to_chain):
 
@@ -44,6 +46,8 @@ class Blockchain(object):
 
 
     def __save_chain(self, path_to_chain: str) -> None:
+
+        path_to_chain = encode_file_path_properly(path_to_chain)
 
         if os.path.isfile(path_to_chain):
 
