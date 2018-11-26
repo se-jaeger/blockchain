@@ -3,7 +3,7 @@ import pickle
 import time
 
 from src.blockchain.block import Block
-from src.helpers.helpers import encode_file_path_properly
+from src.utils.utils import encode_file_path_properly
 
 
 class Blockchain(object):
