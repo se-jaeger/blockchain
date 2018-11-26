@@ -4,7 +4,7 @@ import time
 
 import jsonpickle
 
-from src.blockchain.block import Block
+from src.utils.constants import GENESIS_BLOCK
 from src.utils.utils import encode_file_path_properly
 
 
@@ -21,7 +21,7 @@ class Blockchain(object):
 
         else:
             # if no local chain exists, create the genesis block
-            genesis_block = Block(index=0, data="This is the very first Block in this chain!", proof=100, previous_hash="no previous hash, because it is the genesis block")
+            genesis_block = GENESIS_BLOCK
             self.chain = [genesis_block]
 
             # make sure that chain is saved to disc

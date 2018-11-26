@@ -35,7 +35,4 @@ def test_chain_method(json_format):
     chain = blockchain.chain
     genesis_block = chain[0]
 
-    assert genesis_block.index == 0
-    assert genesis_block.data == "This is the very first Block in this chain!"
-    assert genesis_block.proof == 100
-    assert genesis_block.previous_hash == "no previous hash, because it is the genesis block"
+    assert genesis_block == GENESIS_BLOCK
