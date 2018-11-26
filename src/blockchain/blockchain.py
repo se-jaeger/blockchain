@@ -58,7 +58,7 @@ class Blockchain(object):
             if not os.path.isdir(os.path.dirname(path_to_chain)):
 
                 # make directories if it does not exist
-                os.makedirs(path_to_chain)
+                os.makedirs(os.path.dirname(path_to_chain))
 
         with open(path_to_chain, "wb") as chain_file:
             pickle.dump(self.chain, chain_file)
