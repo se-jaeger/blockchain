@@ -3,6 +3,7 @@
 # THIS SCRIPT IS SUPPOSED TO BE AN EXAMPLE. MODIFY IT ACCORDING TO YOUR NEEDS!
 
 sudo: false
+dist: trusty
 language: python
 virtualenv:
   system_site_packages: true
