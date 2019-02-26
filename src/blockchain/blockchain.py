@@ -11,6 +11,15 @@ from src.utils.utils import encode_file_path_properly
 class Blockchain(object):
 
     def __init__(self, path_to_chain: str, json_format: bool = True) -> None:
+        """
+
+        Constructor for new `Blockchain` object.
+
+        Args:
+            path_to_chain: Path to chain for restore/ backup purposes.
+            json_format: Use JSON format for chain? Otherwise pickle is used.
+
+        """
         super().__init__()
 
         path_to_chain = encode_file_path_properly(path_to_chain)
@@ -31,13 +40,24 @@ class Blockchain(object):
 
 
     def __load_chain(self, path_to_chain: str, json_format: bool) -> list:
+        """
 
+        Helper method to load chain from disk or create a new one.
+
+        Args:
+            path_to_chain: Path to chain file.
+            json_format: Use JSON format for chain? Otherwise pickle is used.
+
+        Returns:
+            object: Return `list` of `Block` objects.
+
+        """
         path_to_chain = encode_file_path_properly(path_to_chain)
 
         # handle no existing chain
         if not os.path.isfile(path_to_chain):
 
-            # TODO: error handling for no existing chain
+            # TODO: error handling for no existing chain -> create new one...
             pass
 
         # deserialize chain from disc depending on serialization format
@@ -54,6 +74,16 @@ class Blockchain(object):
 
 
     def __save_chain(self, path_to_chain: str, json_format: bool) -> None:
+        """
+
+        Helper method to save chain to disk.
+
+        Args:
+            path_to_chain: Path to chain file.
+            json_format: Use JSON format for chain? Otherwise pickle is used.
+        """
+
+        # TODO: raise error ...
 
         path_to_chain = encode_file_path_properly(path_to_chain)
 
