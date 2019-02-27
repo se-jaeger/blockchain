@@ -2,7 +2,6 @@
 Blockchain
 ==========
 
-
 Blockchain implementation in Python.
 
 
@@ -12,9 +11,40 @@ Build
     :target: https://travis-ci.com/se-jaeger/blockchain
 
 
-Run the project
-===============
-Run `pip install -e .` in the root dir of this project. This installs the `blockchain` CLI.
+Metrics
+-------
+
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=Blockchain&metric=vulnerabilities
+
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=Blockchain&metric=bugs
+
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=Blockchain&metric=code_smells
+
+|
+
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=Blockchain&metric=ncloc
+
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=Blockchain&metric=duplicated_lines_density
+
+
+Quality
+-------
+
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=Blockchain&metric=alert_status
+
+|
+
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=Blockchain&metric=sqale_rating
+
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=Blockchain&metric=reliability_rating
+
+.. image:: https://sonarcloud.io/api/project_badges/measure?project=Blockchain&metric=security_rating
+
+
+Install and Run the Project
+===========================
+
+Run `pip install -e .` in the root directory of this project. This installs the `blockchain` CLI, which is then available like: `blockchain --help`
 
 
 Description

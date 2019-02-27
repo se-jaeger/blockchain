@@ -2,25 +2,38 @@
 # Read more under http://docs.travis-ci.com/user/build-configuration/
 # THIS SCRIPT IS SUPPOSED TO BE AN EXAMPLE. MODIFY IT ACCORDING TO YOUR NEEDS!
 
-sudo: false
+dist: trusty
 language: python
+
+addons:
+  sonarcloud:
+    organization: "se-jaeger-github"
+
 virtualenv:
   system_site_packages: true
+
 matrix:
   include:
     - env: DISTRIB="conda" PYTHON_VERSION="3.7" COVERAGE="false"
+
 install:
   - source tests/travis_install.sh
   - pip install -r requirements.txt
+
 before_script:
   - git config --global user.email "se.jaeger@web.de"
   - git config --global user.name "Sebastian Jäger"
+
 script:
   - python setup.py test
+  - sonar-scanner
+
 after_success:
   - if [[ "$COVERAGE" == "true" ]]; then coveralls || echo "failed"; fi
+
 after_script:
   - travis-cleanup
+
 cache:
   pip: true
   directories:
