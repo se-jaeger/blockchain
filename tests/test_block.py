@@ -28,3 +28,15 @@ def test_equality():
 
     assert GENESIS_BLOCK == GENESIS_BLOCK
     assert another_genesis_block == another_genesis_block
+    assert GENESIS_BLOCK != another_genesis_block
+
+def test_negative_equality():
+
+    another_genesis_block = Block(index=0, data="This is the very first Block in this chain!", proof=42, previous_hash="no previous hash, because it is the genesis block")
+
+    assert GENESIS_BLOCK != another_genesis_block
+
+    string_object = "This is a random String object"
+
+    assert GENESIS_BLOCK != string_object
+    assert string_object != another_genesis_block

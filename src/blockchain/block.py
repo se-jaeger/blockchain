@@ -38,8 +38,11 @@ class Block(object):
 
         """
 
+
+        if not isinstance(other, Block):
+            return False
+
         # if all attributes are equal => block1 = block2
-        #TODO: test for: other is no Block object..
         return self.__dict__ == other.__dict__
 
 
