@@ -9,7 +9,7 @@ def encode_file_path_properly (file_path: str) -> str:
         file_path (str): Path to encode properly
 
     Returns:
-        str: Absolut and properly encoded `file_path`
+        str: Absolut and properly encoded ``file_path``
 
     """
 
