@@ -19,6 +19,13 @@ except VersionConflict:
     print("Error: version of setuptools is too old (<38.3)!")
     sys.exit(1)
 
-
 if __name__ == "__main__":
-    setup(use_pyscaffold=True)
+
+    setup(use_pyscaffold=True,
+          packages=["blockchain", "cli", "client", "utils"],
+          package_dir={'blockchain': 'src/blockchain', 'cli': 'src/cli', 'client': 'src/client', 'utils': 'src/utils'},
+          entry_points='''
+            [console_scripts]
+            blockchain=src.cli.cli:cli
+            '''
+          )

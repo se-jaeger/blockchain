@@ -19,3 +19,4 @@ pytest
 sphinx
 pytest-cov
 jsonpickle
+Click
