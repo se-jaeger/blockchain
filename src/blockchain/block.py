@@ -15,6 +15,7 @@ class Block(object):
             previous_hash: Hash value of previous block in chain.
 
         """
+
         super().__init__()
 
         self.__index = index
@@ -36,8 +37,12 @@ class Block(object):
             object: `True` if blocks are equal. `False` otherwise.
 
         """
+
+
+        if not isinstance(other, Block):
+            return False
+
         # if all attributes are equal => block1 = block2
-        #TODO: test for: other is no Block object..
         return self.__dict__ == other.__dict__
 
 
@@ -50,6 +55,7 @@ class Block(object):
             object: String representation of `Block` object.
 
         """
+
         block_rep = "Block object with - "
         block_rep += "index: " + str(self.index)
         block_rep += "\tdata: " + str(self.data)

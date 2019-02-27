@@ -1,12 +1,12 @@
 import click
 
 
-
 @click.group()
 def cli():
     """
         Entrypoint of CLI implementation.
     """
+
     pass
 
 @cli.command()

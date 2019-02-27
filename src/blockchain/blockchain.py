@@ -20,6 +20,7 @@ class Blockchain(object):
             json_format: Use JSON format for chain? Otherwise pickle is used.
 
         """
+
         super().__init__()
 
         path_to_chain = encode_file_path_properly(path_to_chain)
@@ -52,6 +53,7 @@ class Blockchain(object):
             object: Return `list` of `Block` objects.
 
         """
+
         path_to_chain = encode_file_path_properly(path_to_chain)
 
         # handle no existing chain
