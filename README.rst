@@ -44,7 +44,7 @@ Quality
 Install and Run the Project
 ===========================
 
-Run `pip install -e .` in the root directory of this project. This installs the `blockchain` CLI, which is then available like: `blockchain --help`
+Run ``pip install -e .`` in the root directory of this project. This installs the ``blockchain`` CLI, which is then available like: ``blockchain --help``
 
 
 Description
