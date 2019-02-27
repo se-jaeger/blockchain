@@ -13,11 +13,11 @@ class Blockchain(object):
     def __init__(self, path_to_chain: str, json_format: bool = True) -> None:
         """
 
-        Constructor for new `Blockchain` object.
+        Constructor for new ``Blockchain`` object.
 
         Args:
-            path_to_chain: Path to chain for restore/ backup purposes.
-            json_format: Use JSON format for chain? Otherwise pickle is used.
+            path_to_chain (str): Path to chain for restore/ backup purposes.
+            json_format (bool): Use JSON format for chain? Otherwise pickle is used.
 
         """
 
@@ -46,11 +46,11 @@ class Blockchain(object):
         Helper method to load chain from disk. Raises an error if no chain is found.
 
         Args:
-            path_to_chain: Path to chain file.
-            json_format: Use JSON format for chain? Otherwise pickle is used.
+            path_to_chain (str): Path to chain file.
+            json_format (str): Use JSON format for chain? Otherwise ``pickle`` is used.
 
         Returns:
-            object: Return `list` of `Block` objects.
+            list: Return ``list`` of ``Block`` objects.
 
         Raises:
             ChainNotFoundError: Will be raised if no local chain could be found.
@@ -84,8 +84,8 @@ class Blockchain(object):
         Helper method to save chain to disk. Creates intermediate directories and backups an existing chain file if necessary.
 
         Args:
-            path_to_chain: Path to chain file.
-            json_format: Use JSON format for chain? Otherwise pickle is used.
+            path_to_chain (str): Path to chain file.
+            json_format (bool): Use JSON format for chain? Otherwise pickle is used.
 
         """
 

@@ -6,13 +6,13 @@ class Block(object):
     def __init__(self, index: int, data: object, proof: int, previous_hash: str) -> None:
         """
 
-        Constructor for `Block` objects.
+        Constructor for ``Block`` objects.
 
         Args:
-            index: `index` of new Block.
-            data: `data` that is attached to this block.
-            proof: The `proof` value for this block.
-            previous_hash: Hash value of previous block in chain.
+            index (int): If of the new Block.
+            data (object): Data that is attached to this block.
+            proof (int): The ``proof`` value for this block.
+            previous_hash (str): Hash value of previous block in chain.
 
         """
 
@@ -28,16 +28,15 @@ class Block(object):
     def __eq__(self, other) -> bool:
         """
 
-        Method for comparing two `Block` objects.
+        Method for comparing two ``Block`` objects.
 
         Args:
-            other: `Block` object to compare with `self`.
+            other (Block): ``Block`` object to compare with ``self``.
 
         Returns:
-            object: `True` if blocks are equal. `False` otherwise.
+            bool: ``True`` if blocks are equal. ``False`` otherwise.
 
         """
-
 
         if not isinstance(other, Block):
             return False
@@ -49,10 +48,10 @@ class Block(object):
     def __repr__(self) -> str:
         """
 
-        String representation of `Block` object.
+        String representation of ``Block`` object.
 
         Returns:
-            object: String representation of `Block` object.
+            str: String representation of ``Block`` object.
 
         """
 
