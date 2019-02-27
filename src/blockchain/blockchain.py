@@ -27,7 +27,7 @@ class Blockchain(object):
 
         # if local chain exists, load it
         if os.path.isfile(path_to_chain):
-            self.chain = self.__load_chain(path_to_chain, json_format=json_format)
+            self.chain = self._load_chain(path_to_chain, json_format=json_format)
 
         else:
             # if no local chain exists, create the genesis block
@@ -35,12 +35,12 @@ class Blockchain(object):
             self.chain = [genesis_block]
 
             # make sure that chain is saved to disc
-            self.__save_chain(path_to_chain, json_format=json_format)
-            self.chain = self.__load_chain(path_to_chain, json_format=json_format)
+            self._save_chain(path_to_chain, json_format=json_format)
+            self.chain = self._load_chain(path_to_chain, json_format=json_format)
 
 
 
-    def __load_chain(self, path_to_chain: str, json_format: bool) -> list:
+    def _load_chain(self, path_to_chain: str, json_format: bool) -> list:
         """
 
         Helper method to load chain from disk. Raises an error if no chain is found.
@@ -78,7 +78,7 @@ class Blockchain(object):
         return chain
 
 
-    def __save_chain(self, path_to_chain: str, json_format: bool) -> None:
+    def _save_chain(self, path_to_chain: str, json_format: bool) -> None:
         """
 
         Helper method to save chain to disk. Creates intermediate directories and backups an existing chain file if necessary.
@@ -116,12 +116,12 @@ class Blockchain(object):
 
     @property
     def chain(self):
-        return self.__chain
+        return self._chain
 
 
     @chain.setter
     def chain(self, chain):
-        self.__chain = chain
+        self._chain = chain
 
 
 
