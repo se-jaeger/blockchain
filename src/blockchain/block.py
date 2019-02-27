@@ -18,11 +18,11 @@ class Block(object):
 
         super().__init__()
 
-        self.__index = index
-        self.__timestamp = time()
-        self.__data = data
-        self.__proof = proof
-        self.__previous_hash = previous_hash
+        self._index = index
+        self._timestamp = time()
+        self._data = data
+        self._proof = proof
+        self._previous_hash = previous_hash
 
 
     def __eq__(self, other) -> bool:
@@ -67,20 +67,20 @@ class Block(object):
 
     @property
     def index(self) -> int:
-        return self.__index
+        return self._index
 
     @property
     def timestamp(self) -> float:
-        return self.__timestamp
+        return self._timestamp
 
     @property
     def data(self) -> object:
-        return self.__data
+        return self._data
 
     @property
     def proof(self) -> int:
-        return self.__proof
+        return self._proof
 
     @property
     def previous_hash(self) -> str:
-        return self.__previous_hash
+        return self._previous_hash
