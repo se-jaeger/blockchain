@@ -5,10 +5,16 @@ Blockchain
 
 Blockchain implementation in Python.
 
+
 Build
 =====
 .. image:: https://travis-ci.com/se-jaeger/blockchain.svg?token=zzxZGrv6BMyvkUJtbozm&branch=master
     :target: https://travis-ci.com/se-jaeger/blockchain
+
+
+Run the project
+===============
+Run `pip install -e .` in the root dir of this project. This installs the `blockchain` CLI.
 
 
 Description
