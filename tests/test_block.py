@@ -3,7 +3,9 @@ from src.utils.constants import GENESIS_BLOCK
 
 
 def test_constructor():
+
     block = Block(index=0, data="dummy data", proof=42, previous_hash="0815")
+
     assert isinstance(block, Block)
 
     assert block.index == 0
@@ -13,6 +15,7 @@ def test_constructor():
 
 
 def test_timestamp():
+
     block1 = Block(index=0, data="dummy data", proof=42, previous_hash="0815")
     block2 = Block(index=0, data="dummy data", proof=42, previous_hash="0815")
 
