@@ -6,38 +6,37 @@ class Block(object):
     def __init__(self, index: int, data: object, proof: int, previous_hash: str) -> None:
         """
 
-        Constructor for `Block` objects.
+        Constructor for ``Block`` objects.
 
         Args:
-            index: `index` of new Block.
-            data: `data` that is attached to this block.
-            proof: The `proof` value for this block.
-            previous_hash: Hash value of previous block in chain.
+            index (int): If of the new Block.
+            data (object): Data that is attached to this block.
+            proof (int): The ``proof`` value for this block.
+            previous_hash (str): Hash value of previous block in chain.
 
         """
 
         super().__init__()
 
-        self.__index = index
-        self.__timestamp = time()
-        self.__data = data
-        self.__proof = proof
-        self.__previous_hash = previous_hash
+        self._index = index
+        self._timestamp = time()
+        self._data = data
+        self._proof = proof
+        self._previous_hash = previous_hash
 
 
     def __eq__(self, other) -> bool:
         """
 
-        Method for comparing two `Block` objects.
+        Method for comparing two ``Block`` objects.
 
         Args:
-            other: `Block` object to compare with `self`.
+            other (Block): ``Block`` object to compare with ``self``.
 
         Returns:
-            object: `True` if blocks are equal. `False` otherwise.
+            bool: ``True`` if blocks are equal. ``False`` otherwise.
 
         """
-
 
         if not isinstance(other, Block):
             return False
@@ -49,39 +48,50 @@ class Block(object):
     def __repr__(self) -> str:
         """
 
-        String representation of `Block` object.
+        String representation of ``Block`` object.
 
         Returns:
-            object: String representation of `Block` object.
+            str: String representation of ``Block`` object.
 
         """
 
-        block_rep = "Block object with - "
-        block_rep += "index: " + str(self.index)
-        block_rep += "\tdata: " + str(self.data)
-        block_rep += "\ttime: " + str(self.timestamp)
-        block_rep += "\tproof:" + str(self.proof)
-        block_rep += "\tprevious hash:" + str(self.previous_hash)
+        block_rep = "Block object with - \n"
+        block_rep += "\tindex:\t\t" + str(self.index) + "\n"
+        block_rep += "\tdata:\t\t" + str(self.data) + "\n"
+        block_rep += "\ttime:\t\t" + str(self.timestamp) + "\n"
+        block_rep += "\tproof:\t\t" + str(self.proof) + "\n"
+        block_rep += "\tprevious hash:\t" + str(self.previous_hash) + "\n"
 
         return block_rep
 
 
+    def __bytes__(self) -> bytes:
+        """
+
+        Uses the encoded string representation of this ``Block`` object as ``bytes`` representation.
+
+        Returns:
+            bytes: ``byte`` representation of ``Block`` object.
+        """
+        return self.__repr__().encode("utf-8")
+
+
     @property
     def index(self) -> int:
-        return self.__index
+        return self._index
 
     @property
     def timestamp(self) -> float:
-        return self.__timestamp
+        return self._timestamp
 
     @property
     def data(self) -> object:
-        return self.__data
+        return self._data
 
     @property
     def proof(self) -> int:
-        return self.__proof
+        return self._proof
 
     @property
     def previous_hash(self) -> str:
-        return self.__previous_hash
+        return self._previous_hash

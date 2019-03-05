@@ -1,9 +1,9 @@
 import os
-import pickle
 import time
-
+import pickle
 import jsonpickle
 
+from src.blockchain.block import Block
 from src.utils.constants import GENESIS_BLOCK
 from src.utils.utils import encode_file_path_properly
 
@@ -13,11 +13,11 @@ class Blockchain(object):
     def __init__(self, path_to_chain: str, json_format: bool = True) -> None:
         """
 
-        Constructor for new `Blockchain` object.
+        Constructor for new ``Blockchain`` object.
 
         Args:
-            path_to_chain: Path to chain for restore/ backup purposes.
-            json_format: Use JSON format for chain? Otherwise pickle is used.
+            path_to_chain (str): Path to chain for restore/ backup purposes.
+            json_format (bool): Use JSON format for chain? Otherwise pickle is used.
 
         """
 
@@ -27,30 +27,31 @@ class Blockchain(object):
 
         # if local chain exists, load it
         if os.path.isfile(path_to_chain):
-            self.chain = self.__load_chain(path_to_chain, json_format=json_format)
+            self.chain = self._load_chain(path_to_chain, json_format=json_format)
 
         else:
             # if no local chain exists, create the genesis block
-            genesis_block = GENESIS_BLOCK
-            self.chain = [genesis_block]
+            self.chain = [GENESIS_BLOCK]
 
             # make sure that chain is saved to disc
-            self.__save_chain(path_to_chain, json_format=json_format)
-            self.chain = self.__load_chain(path_to_chain, json_format=json_format)
+            self._save_chain(path_to_chain, json_format=json_format)
+            self.chain = self._load_chain(path_to_chain, json_format=json_format)
 
 
-
-    def __load_chain(self, path_to_chain: str, json_format: bool) -> list:
+    def _load_chain(self, path_to_chain: str, json_format: bool) -> list:
         """
 
-        Helper method to load chain from disk or create a new one.
+        Helper method to load chain from disk. Raises an error if no chain is found.
 
         Args:
-            path_to_chain: Path to chain file.
-            json_format: Use JSON format for chain? Otherwise pickle is used.
+            path_to_chain (str): Path to chain file.
+            json_format (str): Use JSON format for chain? Otherwise ``pickle`` is used.
 
         Returns:
-            object: Return `list` of `Block` objects.
+            list: Return ``list`` of ``Block`` objects.
+
+        Raises:
+            ChainNotFoundError: Will be raised if no local chain could be found.
 
         """
 
@@ -58,48 +59,46 @@ class Blockchain(object):
 
         # handle no existing chain
         if not os.path.isfile(path_to_chain):
-
-            # TODO: error handling for no existing chain -> create new one...
-            pass
+            raise ChainNotFoundError("No Blockchain file (.chain) could be found!")
 
         # deserialize chain from disc depending on serialization format
         if json_format:
             with open(path_to_chain, mode="r") as chain_file:
+
                 # TODO: handle errors: corrupt data, ...
                 chain = jsonpickle.decode(chain_file.read())
         else:
             with open(path_to_chain, mode="rb") as chain_file:
+
                 # TODO: handle errors: corrupt data, ...
                 chain = pickle.load(chain_file)
 
         return chain
 
 
-    def __save_chain(self, path_to_chain: str, json_format: bool) -> None:
+    def _save_chain(self, path_to_chain: str, json_format: bool) -> None:
         """
 
-        Helper method to save chain to disk.
+        Helper method to save chain to disk. Creates intermediate directories and backups an existing chain file if necessary.
 
         Args:
-            path_to_chain: Path to chain file.
-            json_format: Use JSON format for chain? Otherwise pickle is used.
-        """
+            path_to_chain (str): Path to chain file.
+            json_format (bool): Use JSON format for chain? Otherwise pickle is used.
 
-        # TODO: raise error ...
+        """
 
         path_to_chain = encode_file_path_properly(path_to_chain)
 
-        # if chain exists, rename the old one first
+        # if chain exists, first rename the old one
         if os.path.isfile(path_to_chain):
-            os.rename(path_to_chain, path_to_chain + "_" + time.strftime("%d-%m-%Y_%H:%M:%S", time.localtime()))
+            filename, file_extension = os.path.splitext(path_to_chain)
+            os.rename(path_to_chain, filename + "_" + time.strftime("%d-%m-%Y_%H:%M:%S", time.localtime()) + file_extension)
 
-        else:
+        # create intermediate directories if necessary
+        elif not os.path.isdir(os.path.dirname(path_to_chain)):
+            os.makedirs(os.path.dirname(path_to_chain))
 
-            # make directories if it does not exist
-            if not os.path.isdir(os.path.dirname(path_to_chain)):
-                os.makedirs(os.path.dirname(path_to_chain))
-
-        # serialize chain to disc depending on serialization format
+        # depending on serialization format serialize chain to disc
         if json_format:
             with open(path_to_chain, "w") as chain_file:
                 chain_file.write(jsonpickle.encode(self.chain))
@@ -108,15 +107,40 @@ class Blockchain(object):
                 pickle.dump(self.chain, chain_file)
 
 
-    def new_block(self) -> None:
-        pass
+    def add_new_block(self, data: object, proof: int, previous_hash: str) -> None:
+        """
+
+        Adds a new Block to the existing chain.
+
+        Args:
+            data (object): Data that is attached to this block.
+            proof (int): The ``proof`` value for this block.
+            previous_hash (str): Hash value of previous block in chain.
+        """
+
+        block = Block(index=len(self.chain), data=data, proof=proof, previous_hash=previous_hash)
+        self.chain.append(block)
+
+
+    @property
+    def last_block(self) -> Block:
+        return self.chain[-1]
 
 
     @property
     def chain(self):
-        return self.__chain
+        return self._chain
 
 
     @chain.setter
-    def chain(self, chain):
-        self.__chain = chain
+    def chain(self, chain: list):
+        self._chain = chain
+
+
+
+class ChainNotFoundError(Exception):
+    """
+
+    Error if no local chain could be found.
+
+    """
