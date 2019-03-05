@@ -48,7 +48,7 @@ def test_hash(json_format, clean_chain_file_fixture):
         assert "Only `Block` objects are hashable!" == str(error.value)
 
 
-def test_valid_proof():
+def test_is_proof_of_work_valid():
 
     last_proof = GENESIS_BLOCK.proof
 
