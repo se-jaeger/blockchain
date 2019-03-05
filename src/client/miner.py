@@ -22,6 +22,34 @@ class Miner(object):
         self._blockchain = Blockchain(path_to_chain=path_to_chain, json_format=json_format)
 
 
+    def proof_of_work(self, last_proof: int, difficulty: int = 5) -> int:
+        """
+        Simple proof of work:
+
+            Find a number ``p`` that when hashed with the previous `block``’s solution a hash with ``difficulty`` trailing 0s is produced.
+
+        Args:
+            last_proof (int): Solution of the last blocks' proof of work
+            difficulty (int): Amount of trailing 0s for a valid proof of work.
+
+        Returns:
+            int: Solution for this proof of work quiz.
+
+        Raises:
+            ValueError: Will be raised if ``difficulty`` is not a positive integer value.
+        """
+
+        if difficulty <= 0:
+            raise ValueError("'difficulty' has to be a positive integer value.")
+
+        proof = 0
+
+        while not self.valid_proof(last_proof, proof, difficulty):
+            proof += 1
+
+        return proof
+
+
     @staticmethod
     def hash(block: Block) -> str:
         """
@@ -39,6 +67,34 @@ class Miner(object):
             raise ValueError("Only `Block` objects are hashable!")
 
         return hashlib.sha256(bytes(block)).hexdigest()
+
+
+    @staticmethod
+    def valid_proof(last_proof: int, proof: int, difficulty: int = 5) -> bool:
+        """
+
+        Checks if the proof of work was correct.
+
+        Args:
+            last_proof (int):
+            proof (int):
+            difficulty (int):
+
+        Returns:
+            bool: ``True`` if proof of work is correct, ``False`` otherwise.
+
+        Raises:
+            ValueError: Will be raised if ``difficulty`` is not a positive integer value.
+        """
+
+        if difficulty <= 0:
+            raise ValueError("'difficulty' has to be a positive integer value.")
+
+        guess = "{}{}".format(last_proof, proof).encode()
+        guess_hash = hashlib.sha256(guess).hexdigest()
+
+        # hash ends with `difficulty` trailing 0?
+        return guess_hash[-difficulty:] == "0" * difficulty
 
 
     @property
