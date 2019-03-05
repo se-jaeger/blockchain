@@ -1,7 +1,12 @@
+import os
 import shutil
 import pytest
 
-from src.blockchain.blockchain import *
+from src.utils.constants import GENESIS_BLOCK
+from src.blockchain.blockchain import Blockchain
+from src.utils.utils import encode_file_path_properly
+
+
 
 constructor_json_format = [True, False]
 
@@ -25,11 +30,33 @@ def test_constructor(json_format, clean_chain_file_fixture):
     blockchain_without_local_chain = Blockchain(path_to_chain=path_to_chain, json_format=json_format)
     assert isinstance(blockchain_without_local_chain, Blockchain)
     assert blockchain_without_local_chain.chain[0] == GENESIS_BLOCK
+    assert blockchain_without_local_chain.last_block == GENESIS_BLOCK
 
     # test with local chain
     blockchain_with_local_chain = Blockchain(path_to_chain=path_to_chain, json_format=json_format)
     assert isinstance(blockchain_with_local_chain, Blockchain)
     assert blockchain_with_local_chain.chain[0] == GENESIS_BLOCK
+    assert blockchain_with_local_chain.last_block == GENESIS_BLOCK
+
+
+@pytest.mark.parametrize("json_format", constructor_json_format)
+def test_add_new_block(json_format, clean_chain_file_fixture):
+    blockchain = Blockchain(path_to_chain=path_to_chain, json_format=json_format)
+
+    blockchain.add_new_block(data="second block", proof=4711, previous_hash="dummy hash value of previous block")
+    blockchain.add_new_block(data="third block", proof=42, previous_hash="dummy hash value of previous block - 2")
+
+    block_0 = blockchain.chain[0]
+    block_1 = blockchain.chain[1]
+    block_2 = blockchain.chain[2]
+
+    assert block_0 == GENESIS_BLOCK
+    assert block_2 == blockchain.last_block
+
+    assert block_0 != block_1
+    assert block_0 != block_2
+    assert block_1 != block_2
+
 
 
 @pytest.mark.parametrize("json_format", constructor_json_format)
@@ -40,3 +67,5 @@ def test_chain_method(json_format, clean_chain_file_fixture):
     genesis_block = chain[0]
 
     assert genesis_block == GENESIS_BLOCK
+
+# TODO: Tests for private fuctions..

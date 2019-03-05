@@ -1,9 +1,9 @@
 import os
-import pickle
 import time
-
+import pickle
 import jsonpickle
 
+from src.blockchain.block import Block
 from src.utils.constants import GENESIS_BLOCK
 from src.utils.utils import encode_file_path_properly
 
@@ -31,13 +31,11 @@ class Blockchain(object):
 
         else:
             # if no local chain exists, create the genesis block
-            genesis_block = GENESIS_BLOCK
-            self.chain = [genesis_block]
+            self.chain = [GENESIS_BLOCK]
 
             # make sure that chain is saved to disc
             self._save_chain(path_to_chain, json_format=json_format)
             self.chain = self._load_chain(path_to_chain, json_format=json_format)
-
 
 
     def _load_chain(self, path_to_chain: str, json_format: bool) -> list:
@@ -100,7 +98,6 @@ class Blockchain(object):
         elif not os.path.isdir(os.path.dirname(path_to_chain)):
             os.makedirs(os.path.dirname(path_to_chain))
 
-
         # depending on serialization format serialize chain to disc
         if json_format:
             with open(path_to_chain, "w") as chain_file:
@@ -110,8 +107,24 @@ class Blockchain(object):
                 pickle.dump(self.chain, chain_file)
 
 
-    def new_block(self) -> None:
-        pass
+    def add_new_block(self, data: object, proof: int, previous_hash: str) -> None:
+        """
+
+        Adds a new Block to the existing chain.
+
+        Args:
+            data (object): Data that is attached to this block.
+            proof (int): The ``proof`` value for this block.
+            previous_hash (str): Hash value of previous block in chain.
+        """
+
+        block = Block(index=len(self.chain), data=data, proof=proof, previous_hash=previous_hash)
+        self.chain.append(block)
+
+
+    @property
+    def last_block(self) -> Block:
+        return self.chain[-1]
 
 
     @property
@@ -120,7 +133,7 @@ class Blockchain(object):
 
 
     @chain.setter
-    def chain(self, chain):
+    def chain(self, chain: list):
         self._chain = chain
 
 
