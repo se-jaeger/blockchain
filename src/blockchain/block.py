@@ -55,14 +55,25 @@ class Block(object):
 
         """
 
-        block_rep = "Block object with - "
-        block_rep += "index: " + str(self.index)
-        block_rep += "\tdata: " + str(self.data)
-        block_rep += "\ttime: " + str(self.timestamp)
-        block_rep += "\tproof:" + str(self.proof)
-        block_rep += "\tprevious hash:" + str(self.previous_hash)
+        block_rep = "Block object with - \n"
+        block_rep += "\tindex:\t\t" + str(self.index) + "\n"
+        block_rep += "\tdata:\t\t" + str(self.data) + "\n"
+        block_rep += "\ttime:\t\t" + str(self.timestamp) + "\n"
+        block_rep += "\tproof:\t\t" + str(self.proof) + "\n"
+        block_rep += "\tprevious hash:\t" + str(self.previous_hash) + "\n"
 
         return block_rep
+
+
+    def __bytes__(self) -> bytes:
+        """
+
+        Uses the encoded string representation of this ``Block`` object as ``bytes`` representation.
+
+        Returns:
+            bytes: ``byte`` representation of ``Block`` object.
+        """
+        return self.__repr__().encode("utf-8")
 
 
     @property
