@@ -49,7 +49,6 @@ class Miner(object):
 
         return proof
 
-
     @staticmethod
     def hash(block: Block) -> str:
         """
@@ -57,10 +56,13 @@ class Miner(object):
         Hash a ``Block`` object with SHA-256.
 
         Args:
-            block (Block):
+            block (Block): Object of class ``Block`` to hash.
 
         Returns:
             str: Hex representation of ``block`` hash.
+
+        Raises:
+            ValueError: Will be raised if no ``Block`` object is passed.
         """
 
         if not isinstance(block, Block):
