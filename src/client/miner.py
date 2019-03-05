@@ -44,7 +44,7 @@ class Miner(object):
 
         proof = 0
 
-        while not self.valid_proof(last_proof, proof, difficulty):
+        while not self.is_proof_of_work_valid(last_proof, proof, difficulty):
             proof += 1
 
         return proof
@@ -72,7 +72,7 @@ class Miner(object):
 
 
     @staticmethod
-    def valid_proof(last_proof: int, proof: int, difficulty: int = 5) -> bool:
+    def is_proof_of_work_valid(last_proof: int, proof: int, difficulty: int = 5) -> bool:
         """
 
         Checks if the proof of work was correct.

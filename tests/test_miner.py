@@ -52,20 +52,20 @@ def test_valid_proof():
 
     last_proof = GENESIS_BLOCK.proof
 
-    assert Miner.valid_proof(last_proof=last_proof, proof=16, difficulty=1)
-    assert Miner.valid_proof(last_proof=last_proof, proof=1456, difficulty=2)
-    assert Miner.valid_proof(last_proof=last_proof, proof=8710, difficulty=3)
-    assert Miner.valid_proof(last_proof=last_proof, proof=35146, difficulty=4)
+    assert Miner.is_proof_of_work_valid(last_proof=last_proof, proof=16, difficulty=1)
+    assert Miner.is_proof_of_work_valid(last_proof=last_proof, proof=1456, difficulty=2)
+    assert Miner.is_proof_of_work_valid(last_proof=last_proof, proof=8710, difficulty=3)
+    assert Miner.is_proof_of_work_valid(last_proof=last_proof, proof=35146, difficulty=4)
 
     # difficulty has to be a positive integer value
     with pytest.raises(ValueError) as error:
 
-        Miner.valid_proof(last_proof=last_proof, proof=16, difficulty=0)
+        Miner.is_proof_of_work_valid(last_proof=last_proof, proof=16, difficulty=0)
         assert "'difficulty' has to be a positive integer value." == str(error.value)
 
     with pytest.raises(ValueError) as error:
 
-        Miner.valid_proof(last_proof=last_proof, proof=16, difficulty=-1)
+        Miner.is_proof_of_work_valid(last_proof=last_proof, proof=16, difficulty=-1)
         assert "'difficulty' has to be a positive integer value." == str(error.value)
 
 
