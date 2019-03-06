@@ -126,11 +126,12 @@ class Miner(object):
         """
 
         Checks if the proof of work was correct.
+        The hash value of ``last_proof`` concatenated with ``proof`` has to be ``difficulty`` trailing 0s.
 
         Args:
-            last_proof (int):
-            proof (int):
-            difficulty (int):
+            last_proof (int): Value of the ``proof`` of the preceding block.
+            proof (int): ``proof`` of the actual block.
+            difficulty (int): Amount of trailing 0s.
 
         Returns:
             bool: ``True`` if proof of work is correct, ``False`` otherwise.
