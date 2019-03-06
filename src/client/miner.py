@@ -2,11 +2,12 @@ import hashlib
 
 from src.blockchain.block import Block
 from src.blockchain.blockchain import Blockchain
+from src.utils.constants import DIFFICULTY_DEFAULT
 
 
 class Miner(object):
 
-    def __init__(self, path_to_chain: str, json_format: bool = True) -> None:
+    def __init__(self, path_to_chain: str, json_format: bool = True, difficulty: int = DIFFICULTY_DEFAULT) -> None:
         """
 
         Constructor for new ``Miner`` object.
@@ -14,14 +15,17 @@ class Miner(object):
         Args:
             path_to_chain (str): Path to chain for restore/ backup purposes.
             json_format (bool): Use JSON format for chain? Otherwise pickle is used.
+            difficulty (int): Amount of trailing 0s for proof of work
         """
 
         super().__init__()
 
         self._blockchain = Blockchain(path_to_chain=path_to_chain, json_format=json_format)
+        self._difficulty = difficulty
 
 
-    def proof_of_work(self, last_proof: int, difficulty: int = 5) -> int:
+
+    def proof_of_work(self, last_proof: int, difficulty: int = DIFFICULTY_DEFAULT) -> int:
         """
         Simple proof of work:
 
@@ -89,7 +93,7 @@ class Miner(object):
                 previous_hash = Miner.hash(previous_block)
 
                 # TODO: add difficulty - maybe for constructing miner object?
-                if block.index != index or block.previous_hash != previous_hash or not self.is_proof_of_work_valid(previous_block.proof, block.proof) or previous_block.timestamp >= block.timestamp:
+                if block.index != index or block.previous_hash != previous_hash or not self.is_proof_of_work_valid(previous_block.proof, block.proof, self.difficulty) or previous_block.timestamp >= block.timestamp:
 
                     # block ist not valid! => wrong chain
                     return False
@@ -122,7 +126,7 @@ class Miner(object):
 
 
     @staticmethod
-    def is_proof_of_work_valid(last_proof: int, proof: int, difficulty: int = 5) -> bool:
+    def is_proof_of_work_valid(last_proof: int, proof: int, difficulty: int = DIFFICULTY_DEFAULT) -> bool:
         """
 
         Checks if the proof of work was correct.
@@ -151,10 +155,15 @@ class Miner(object):
 
 
     @property
-    def blockchain(self):
+    def blockchain(self) -> Blockchain:
         return self._blockchain
 
 
     @blockchain.setter
     def blockchain(self, blockchain: Blockchain):
         self._blockchain = blockchain
+
+
+    @property
+    def difficulty(self) -> int:
+        return self._difficulty
