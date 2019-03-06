@@ -23,29 +23,26 @@ class Blockchain(object):
 
         super().__init__()
 
-        path_to_chain = encode_file_path_properly(path_to_chain)
+        self._path_to_chain = encode_file_path_properly(path_to_chain)
+        self._json_format = json_format
 
         # if local chain exists, load it
-        if os.path.isfile(path_to_chain):
-            self.chain = self._load_chain(path_to_chain, json_format=json_format)
+        if os.path.isfile(self.path_to_chain):
+            self.chain = self._load_chain()
 
         else:
             # if no local chain exists, create the genesis block
             self.chain = [GENESIS_BLOCK]
 
             # make sure that chain is saved to disc
-            self._save_chain(path_to_chain, json_format=json_format)
-            self.chain = self._load_chain(path_to_chain, json_format=json_format)
+            self._save_chain()
+            self.chain = self._load_chain()
 
 
-    def _load_chain(self, path_to_chain: str, json_format: bool) -> list:
+    def _load_chain(self) -> list:
         """
 
         Helper method to load chain from disk. Raises an error if no chain is found.
-
-        Args:
-            path_to_chain (str): Path to chain file.
-            json_format (str): Use JSON format for chain? Otherwise ``pickle`` is used.
 
         Returns:
             list: Return ``list`` of ``Block`` objects.
@@ -55,14 +52,14 @@ class Blockchain(object):
 
         """
 
-        path_to_chain = encode_file_path_properly(path_to_chain)
+        path_to_chain = encode_file_path_properly(self.path_to_chain)
 
         # handle no existing chain
         if not os.path.isfile(path_to_chain):
             raise ChainNotFoundError("No Blockchain file (.chain) could be found!")
 
         # deserialize chain from disc depending on serialization format
-        if json_format:
+        if self.json_format:
             with open(path_to_chain, mode="r") as chain_file:
 
                 # TODO: handle errors: corrupt data, ...
@@ -76,18 +73,14 @@ class Blockchain(object):
         return chain
 
 
-    def _save_chain(self, path_to_chain: str, json_format: bool) -> None:
+    def _save_chain(self) -> None:
         """
 
         Helper method to save chain to disk. Creates intermediate directories and backups an existing chain file if necessary.
 
-        Args:
-            path_to_chain (str): Path to chain file.
-            json_format (bool): Use JSON format for chain? Otherwise pickle is used.
-
         """
 
-        path_to_chain = encode_file_path_properly(path_to_chain)
+        path_to_chain = encode_file_path_properly(self.path_to_chain)
 
         # if chain exists, first rename the old one
         if os.path.isfile(path_to_chain):
@@ -99,7 +92,7 @@ class Blockchain(object):
             os.makedirs(os.path.dirname(path_to_chain))
 
         # depending on serialization format serialize chain to disc
-        if json_format:
+        if self.json_format:
             with open(path_to_chain, "w") as chain_file:
                 chain_file.write(jsonpickle.encode(self.chain))
         else:
@@ -121,6 +114,14 @@ class Blockchain(object):
         block = Block(index=len(self.chain), data=data, proof=proof, previous_hash=previous_hash)
         self.chain.append(block)
 
+        #TODO: good idea? -> hack to save actual chain..
+        self._save_chain()
+
+
+    def __repr__(self) -> str:
+        # TODO: print blockckain
+        pass
+
 
     @property
     def last_block(self) -> Block:
@@ -128,7 +129,17 @@ class Blockchain(object):
 
 
     @property
-    def chain(self):
+    def path_to_chain(self) -> str:
+        return self._path_to_chain
+
+
+    @property
+    def json_format(self) -> bool:
+        return self._json_format
+
+
+    @property
+    def chain(self) -> list:
         return self._chain
 
 
