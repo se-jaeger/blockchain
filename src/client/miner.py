@@ -4,7 +4,6 @@ from src.blockchain.block import Block
 from src.blockchain.blockchain import Blockchain
 
 
-
 class Miner(object):
 
     def __init__(self, path_to_chain: str, json_format: bool = True) -> None:
@@ -48,6 +47,57 @@ class Miner(object):
             proof += 1
 
         return proof
+
+
+    def is_chain_valid(self, chain: list) -> bool:
+        """
+
+        Checks if the given ``chain`` satisfies the following rules:
+            1. The first (genesis) block:
+                - ``index`` = 0
+                - ``previous_hash`` = None
+                - ``proof`` = None
+
+            2. each and every following block:
+                - ``index``: step size 1 and monotonically increasing (1, 2, 3, 4, ...)
+                - ``previous_hash``: SHA-256 of the string representation of the preceding block
+                - ``proof``: has to be valid -> see: :meth:`~Miner.is_proof_of_work_valid`
+                - ``timestamp``: higher than the timestamp of of preceding block
+
+        Args:
+            chain (list): list of ``Block`` objects forming a blockchain.
+
+        Returns:
+            bool: ``True`` if ``chain`` is valid, ``False`` otherwise.
+        """
+
+        previous_block = None
+
+        for index, block in enumerate(chain):
+
+            # rules for genesis block
+            if index == 0:
+
+                # correct genesis block?
+                if block.index != 0 or block.previous_hash != None or block.proof != None:
+
+                    # genesis block is not valid! => wrong chain
+                    return False
+
+            # rules for any other block
+            else:
+                previous_hash = Miner.hash(previous_block)
+
+                # TODO: add difficulty - maybe for constructing miner object?
+                if block.index != index or block.previous_hash != previous_hash or not self.is_proof_of_work_valid(previous_block.proof, block.proof) or previous_block.timestamp >= block.timestamp:
+
+                    # block ist not valid! => wrong chain
+                    return False
+
+            previous_block = block
+
+        return True
+
 
     @staticmethod
     def hash(block: Block) -> str:
