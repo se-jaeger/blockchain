@@ -52,10 +52,10 @@ def test_is_proof_of_work_valid():
 
     last_proof = GENESIS_BLOCK.proof
 
-    assert Miner.is_proof_of_work_valid(last_proof=last_proof, proof=16, difficulty=1)
-    assert Miner.is_proof_of_work_valid(last_proof=last_proof, proof=1456, difficulty=2)
-    assert Miner.is_proof_of_work_valid(last_proof=last_proof, proof=8710, difficulty=3)
-    assert Miner.is_proof_of_work_valid(last_proof=last_proof, proof=35146, difficulty=4)
+    assert Miner.is_proof_of_work_valid(last_proof=last_proof, proof=1, difficulty=1)
+    assert Miner.is_proof_of_work_valid(last_proof=last_proof, proof=350, difficulty=2)
+    assert Miner.is_proof_of_work_valid(last_proof=last_proof, proof=3969, difficulty=3)
+    assert Miner.is_proof_of_work_valid(last_proof=last_proof, proof=15558, difficulty=4)
 
     # difficulty has to be a positive integer value
     with pytest.raises(ValueError) as error:
@@ -74,17 +74,17 @@ def test_proof_of_work(json_format, clean_chain_file_fixture):
 
     miner = Miner(path_to_chain=path_to_chain, json_format=json_format)
 
-    proof_of_work_difficulty_1 = miner.proof_of_work(last_proof=42, difficulty=1)
-    proof_of_work_difficulty_2 = miner.proof_of_work(last_proof=42, difficulty=2)
-    proof_of_work_difficulty_3 = miner.proof_of_work(last_proof=42, difficulty=3)
-    proof_of_work_difficulty_4 = miner.proof_of_work(last_proof=42, difficulty=4)
-    proof_of_work_difficulty_5 = miner.proof_of_work(last_proof=42, difficulty=5)
+    proof_of_work_difficulty_1 = miner.proof_of_work(last_proof=None, difficulty=1)
+    proof_of_work_difficulty_2 = miner.proof_of_work(last_proof=None, difficulty=2)
+    proof_of_work_difficulty_3 = miner.proof_of_work(last_proof=None, difficulty=3)
+    proof_of_work_difficulty_4 = miner.proof_of_work(last_proof=None, difficulty=4)
+    proof_of_work_difficulty_5 = miner.proof_of_work(last_proof=None, difficulty=5)
 
-    assert proof_of_work_difficulty_1 == 16
-    assert proof_of_work_difficulty_2 == 1456
-    assert proof_of_work_difficulty_3 == 8710
-    assert proof_of_work_difficulty_4 == 35146
-    assert proof_of_work_difficulty_5 == 712500
+    assert proof_of_work_difficulty_1 == 1
+    assert proof_of_work_difficulty_2 == 350
+    assert proof_of_work_difficulty_3 == 3969
+    assert proof_of_work_difficulty_4 == 15558
+    assert proof_of_work_difficulty_5 == 1406000
 
 
 @pytest.mark.parametrize("json_format", constructor_json_format)
