@@ -1,22 +1,49 @@
 from time import time
 
+from src.blockchain.data import Data
+
 
 class Block(object):
 
-    def __init__(self, index: int, data: object, proof: int, previous_hash: str) -> None:
+    def __init__(self, index: int, data: Data, proof: int, previous_hash: str) -> None:
         """
 
         Constructor for ``Block`` objects.
+            Constraints:
+                - ``index`` has to be int and positiv
+                - ``data`` has to be a object of class ``Data``
+                - ``proof`` has to be int
+                - ``prevoius_hash`` has to be string and of length 64 (64 hex digits hash).
 
         Args:
             index (int): If of the new Block.
-            data (object): Data that is attached to this block.
+            data (Data): Data that is attached to this block.
             proof (int): The ``proof`` value for this block.
             previous_hash (str): Hash value of previous block in chain.
 
         """
 
         super().__init__()
+
+        if index == 0 and proof == None and previous_hash == None:
+
+            # Genesis Block is ok. For all others check constraints.
+            pass
+
+        else:
+
+            if not isinstance(index, int) or index < 0:
+                raise ValueError("Index has incorrect type or value!")
+
+            if not isinstance(data, Data):
+                raise ValueError("Data is not a object of class 'Data'.")
+
+            if not isinstance(proof, int):
+                raise ValueError("Proof has incorrect type!")
+
+            if not isinstance(previous_hash, str) or len(previous_hash) != 64:
+                raise ValueError("Previous hash has incorrect type or wrong length!")
+
 
         self._index = index
         self._timestamp = time()
