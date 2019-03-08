@@ -3,6 +3,7 @@ import time
 import pickle
 import jsonpickle
 
+from src.blockchain.data import Data
 from src.blockchain.block import Block
 from src.utils.constants import GENESIS_BLOCK
 from src.utils.utils import encode_file_path_properly
@@ -10,7 +11,7 @@ from src.utils.utils import encode_file_path_properly
 
 class Blockchain(object):
 
-    def __init__(self, path_to_chain: str, json_format: bool = True) -> None:
+    def __init__(self, path_to_chain: str, json_format: bool) -> None:
         """
 
         Constructor for new ``Blockchain`` object.
@@ -18,7 +19,6 @@ class Blockchain(object):
         Args:
             path_to_chain (str): Path to chain for restore/ backup purposes.
             json_format (bool): Use JSON format for chain? Otherwise pickle is used.
-
         """
 
         super().__init__()
@@ -100,13 +100,13 @@ class Blockchain(object):
                 pickle.dump(self.chain, chain_file)
 
 
-    def add_new_block(self, data: object, proof: int, previous_hash: str) -> None:
+    def add_new_block(self, data: Data, proof: int, previous_hash: str) -> None:
         """
 
         Adds a new Block to the existing chain.
 
         Args:
-            data (object): Data that is attached to this block.
+            data (Data): Data that is attached to this block.
             proof (int): The ``proof`` value for this block.
             previous_hash (str): Hash value of previous block in chain.
         """
@@ -144,7 +144,7 @@ class Blockchain(object):
 
 
     @chain.setter
-    def chain(self, chain: list):
+    def chain(self, chain: list) -> None:
         self._chain = chain
 
 
