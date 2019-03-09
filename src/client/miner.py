@@ -1,9 +1,10 @@
-from datetime import timedelta
-
+import hashlib
 import hashlib
 import requests
 import jsonpickle
-import multiprocessing
+
+from datetime import timedelta
+from multiprocessing import Process
 
 from src.utils.constants import *
 from src.blockchain.data import Data
@@ -55,29 +56,38 @@ class Miner(object):
 
         print("Init async jobs ..")
 
+        update_neighbour_job = Job(interval=timedelta(seconds=GOSSIP_TIME_SECONDS), execute=self.update_neighbours)
+        check_for_longest_chain_job = Job(interval=timedelta(seconds=CHAIN_SYNC_TIME_SECONDS), execute=self.check_for_longest_chain)
+        fetch_unprocessed_data_job = Job(interval=timedelta(seconds=UNPROCESS_DATA_SYNC_TIME_SECONDS), execute=self.fetch_unprocessed_data)
+        self._server_process = Process(target=start_server, args=[self])
 
-        a = Job(interval=timedelta(seconds=GOSSIP_TIME_SECONDS), execute=self.update_neighbours)
-        b = Job(interval=timedelta(seconds=CHAIN_SYNC_TIME_SECONDS), execute=self.check_for_longest_chain)
-        c = Job(interval=timedelta(seconds=UNPROCESS_DATA_SYNC_TIME_SECONDS), execute=self.fetch_unprocessed_data)
+        update_neighbour_job.start()
+        check_for_longest_chain_job.start()
+        fetch_unprocessed_data_job.start()
+        self.server_process.start()
 
-        multiprocessing.Process(target=start_server, args=[self]).start()
-
-        a.start()
-        b.start()
-        c.start()
-
-        self.jobs.append(a)
-        self.jobs.append(b)
-        self.jobs.append(c)
-
-
-        # TODO .
-        print("Start async jobs ..")
-
+        self.jobs.append(update_neighbour_job)
+        self.jobs.append(check_for_longest_chain_job)
+        self.jobs.append(fetch_unprocessed_data_job)
 
         print("Start Mining...")
 
         self.mine()
+
+
+    def stop_mining(self) -> None:
+
+        print("Start Cleanup!")
+
+        for job in self.jobs:
+            job.stop()
+
+        self.server_process.terminate()
+        self.server_process.join()
+
+        self.blockchain._save_chain()
+
+        print("Cleanup Done!")
 
 
     def proof_of_work(self, last_proof: int, difficulty: int) -> int:
@@ -380,7 +390,6 @@ class Miner(object):
     def jobs(self) -> list:
         return self._jobs
 
-
-    # @jobs.setter
-    # def jobs(self, jobs: list) -> None:
-    #     self._jobs = jobs
+    @property
+    def server_process(self) -> Process:
+        return self._server_process
