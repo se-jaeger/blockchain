@@ -1,8 +1,7 @@
-from datetime import timedelta
-
 import os
 import threading
 
+from datetime import timedelta
 from ipaddress import ip_address, IPv4Address
 
 
@@ -29,13 +28,13 @@ def encode_file_path_properly(file_path: str) -> str:
     return file_path
 
 
-def encode_IP_port_properly(address: str, port: int) -> (IPv4Address, int):
+def encode_IP_port_properly(ip: str, port: int) -> (IPv4Address, int):
     """
 
     Validates given IP Address and port.
 
     Args:
-        address: IP address or ``localhost`` to check for correctness.
+        ip: IP address or ``localhost`` to check for correctness.
         port: Port to validate.
 
     Returns:
@@ -46,31 +45,48 @@ def encode_IP_port_properly(address: str, port: int) -> (IPv4Address, int):
         AddressValueError: Will be raised if given ``address`` is not a valid IPv4 address or "localhost".
 
     """
-    if address == "localhost":
-        address = "127.0.0.1"
+    if ip == "localhost":
+        ip = "127.0.0.1"
 
     if port < 1 or port > 65535:
         raise PortValueError("Given port is out of range (1 - 65535).")
 
-    return (ip_address(address), port)
+    return (ip_address(ip), port)
 
 
-def create_proper_url_string(address: (IPv4Address, int), path: str) -> str:
+def create_proper_url_string(host_port: (IPv4Address, int), path: str) -> str:
     """
 
     Args:
-        address (IPv4Address, int): Internal representation of IP address and port combination.
+        host_port (IPv4Address, int): Internal representation of IP address and port combination.
         path (int): The endpoint of the API.
 
     Returns:
         str: Correct URL string for ``address`` and ``path``.
 
     """
+
     # remove all leading / (slash)
     while path.startswith("/"):
         path = path[len("/"):]
 
-    return f"http://{address[0]}:{address[1]}/{path}"
+    return f"http://{host_port[0]}:{host_port[1]}/{path}"
+
+
+def create_URL(address: str, port: int, path: str) -> str:
+    """
+    Function for convenience to create URL strings.
+
+    Args:
+        address: IP address or ``localhost`` to check for correctness.
+        port: Port to validate.
+        str: Correct URL string for ``address`` and ``path``.
+
+    Returns:
+        path (int): The endpoint of the API.
+
+    """
+    return create_proper_url_string(encode_IP_port_properly(address, port), path)
 
 
 def signal_handler(signum, frame):
@@ -82,6 +98,7 @@ def signal_handler(signum, frame):
 
     """
     raise ProgramKilledError
+
 
 
 class Job(threading.Thread):
