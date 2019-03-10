@@ -4,6 +4,7 @@ import threading
 from datetime import timedelta
 from ipaddress import ip_address, IPv4Address
 
+from src.utils.errors import ProgramKilledError, PortValueError
 
 
 def encode_file_path_properly(file_path: str) -> str:
@@ -138,15 +139,3 @@ class Job(threading.Thread):
 
         while not self.stopped.wait(self.interval.total_seconds()):
             self.execute(*self.args, **self.kwargs)
-
-
-
-class PortValueError(ValueError):
-    """
-     Error if given port is out af valid range (1 - 65535).
-    """
-
-class ProgramKilledError(Exception):
-    """
-    Error if process get killed.
-    """

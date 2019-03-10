@@ -6,6 +6,7 @@ import jsonpickle
 from src.blockchain.data import Data
 from src.blockchain.block import Block
 from src.utils.constants import GENESIS_BLOCK
+from src.utils.errors import ChainNotFoundError
 from src.utils.utils import encode_file_path_properly
 
 
@@ -146,12 +147,3 @@ class Blockchain(object):
     @chain.setter
     def chain(self, chain: list) -> None:
         self._chain = chain
-
-
-
-class ChainNotFoundError(Exception):
-    """
-
-    Error if no local chain could be found.
-
-    """
