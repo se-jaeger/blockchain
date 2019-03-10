@@ -1,11 +1,10 @@
-import jsonpickle
-
+from multiprocessing import Queue, Pipe
 from flask import Flask, jsonify, request
 
 from src.utils.constants import *
 
 
-def start_server(miner):
+def start_server(queue: Queue):
 
     app = Flask(__name__)
 
@@ -18,8 +17,7 @@ def start_server(miner):
         if not message:
             return jsonify({"message": "No Message added! - Missing data..."}), HTTP_BAD
 
-
-        miner.new_message(message)
+        queue.put_nowait({ADD_KEY: message})
 
         response = {"message": "Message added!",
                     "more_information": "Will be mined in a future block."
@@ -31,23 +29,34 @@ def start_server(miner):
     @app.route(CHAIN_ENDPOINT, methods=["GET"])
     def send_chain():
 
-        response = {
-            'chain': jsonpickle.encode(miner.blockchain.chain),
-            'length': len(miner.blockchain.chain),
-        }
+        parent_connection, child_connection = Pipe()
+        queue.put_nowait({SEND_CHAIN_KEY: parent_connection})
+
+        response = child_connection.recv()
+
         return jsonify(response), HTTP_OK
 
 
     @app.route(NEIGHBOURS_ENDPOINT, methods=["GET"])
     def send_neighbours():
 
-        return jsonify(jsonpickle.encode(miner.neighbours)), HTTP_OK
+        parent_connection, child_connection = Pipe()
+        queue.put_nowait({SEND_NEIGHBOURS_KEY: parent_connection})
+
+        response = child_connection.recv()
+
+        return jsonify(response), HTTP_OK
 
 
     @app.route(DATA_ENDPOINT, methods=["GET"])
     def send_data():
 
-        return jsonify(jsonpickle.encode(miner.unprocessed_data)), HTTP_OK
+        parent_connection, child_connection = Pipe()
+        queue.put_nowait({SEND_DATA_KEY: parent_connection})
+
+        response = child_connection.recv()
+
+        return jsonify(response), HTTP_OK
 
 
     @app.route("/", defaults={"path": ""})
