@@ -53,7 +53,7 @@ def start_server(miner):
     @app.route("/", defaults={"path": ""})
     @app.route("/<path:path>", methods=["GET", "POST"])
     def catch_all(path):
-        return jsonify({"message": "'{}' is not a valid endpoint!".format(path)}), 404
+        return jsonify({"message": "'{}' is not a valid endpoint!".format(path)}), HTTP_NOT_FOUND
 
 
     app.run(HOST_DEFAULT, PORT_DEFAULT)
