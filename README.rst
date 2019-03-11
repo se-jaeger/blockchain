@@ -2,7 +2,7 @@
 Blockchain
 ==========
 
-Blockchain implementation in Python.
+Simple Blockchain implementation in Python to get familiar with Python and the basic concepts of Blockchains.
 
 
 Build
@@ -44,7 +44,15 @@ Quality
 Install and Run the Project
 ===========================
 
-Run ``pip install -e .`` in the root directory of this project. This installs the ``blockchain`` CLI, which is then available like: ``blockchain --help``
+The actual fastest and easiest way to install this project is as follows.
+
+1. Clone this repository: ``git clone git@github.com:se-jaeger/blockchain.git``
+2. Open the clone directory: ``cd blockchain``
+3. Create a virtual env: ``python -m venv venv``
+4. Activate the virtual env: ``source venv/bin/activate``
+5. Install all dependencies: ``pip install -r requirements.txt``
+6. Install the ``blockchain`` CLI, run the following in the root directory of this project: ``pip install -e .``
+7. Check available commands: ``blockchain --help``
 
 
 Description
