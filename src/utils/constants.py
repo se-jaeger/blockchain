@@ -36,4 +36,4 @@ GOSSIP_TIME_SECONDS = 5
 CHAIN_SYNC_TIME_SECONDS = 5
 UNPROCESS_DATA_SYNC_TIME_SECONDS = 5
 
-LOGGING_FORMAT = "[%(asctime)s - %(filename)s:%(lineno)s - %(levelname)s - %(funcName)s]: %(message)s"
+LOGGING_FORMAT = "[%(asctime)s - %(filename)-15s:%(lineno)-4s - %(levelname)-7s - %(funcName)-25s]: %(message)s"
