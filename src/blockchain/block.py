@@ -2,12 +2,11 @@ import logging
 
 from time import time
 
-from src.utils.constants import *
 from src.blockchain.data import Data
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(DEFAULT_LOG_LEVEL)
+logger.setLevel(logging.DEBUG)
 
 
 class Block(object):
@@ -31,7 +30,7 @@ class Block(object):
         """
 
         logger.info("Create 'Block' object.")
-        logger.debug(f"Arguments - index: {index}, data.id: {data.id}, data.message: {data.message}, proof: {proof}, previous_hash: {previous_hash}")
+        logger.debug(f"Arguments - index: {index}, data.id: {data.id if isinstance(data, Data) else None}, data.message: {data.message if isinstance(data, Data) else None}, proof: {proof}, previous_hash: {previous_hash}")
 
         logger.debug("Init parent Class.")
         super().__init__()
@@ -77,7 +76,7 @@ class Block(object):
         logger.debug(f"'Block' object created.")
 
 
-    def __eq__(self, other: Block) -> bool:
+    def __eq__(self, other: object) -> bool:
         """
 
         Method for comparing two ``Block`` objects.

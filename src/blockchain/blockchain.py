@@ -12,7 +12,7 @@ from src.utils.utils import encode_file_path_properly
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(DEFAULT_LOG_LEVEL)
+logger.setLevel(logging.DEBUG)
 
 
 class Blockchain(object):
@@ -151,7 +151,7 @@ class Blockchain(object):
             previous_hash (str): Hash value of previous block in chain.
         """
 
-        logger.debug(f"Create and add new block ... - data: {data}, proof: {proof}, previous_hash: {previous_hash}")
+        logger.debug(f"Create and add new block ... - data.id: '{data.id}', data.message: '{data.message}', proof: '{proof}'', previous_hash: '{previous_hash}'")
 
         block = Block(index=len(self.chain), data=data, proof=proof, previous_hash=previous_hash)
         self.chain.append(block)
@@ -159,7 +159,7 @@ class Blockchain(object):
         #TODO: good idea? -> hack to save actual chain..
         self._save_chain()
 
-        logger.debug(f"New block added. - block.index: {block.index}, block.proof: {block.proof}, block.previous_hash: {block.previous_hash}, block.timestamp: {block.timestamp}, block.data.id: {block.data.id}, block.data.message: {block.data.message}")
+        logger.debug(f"New block added. - block.index: '{block.index}', block.proof: '{block.proof}', block.previous_hash: '{block.previous_hash}', block.timestamp: '{block.timestamp}', block.data.id: '{block.data.id}', block.data.message: '{block.data.message}'")
 
         return block
 

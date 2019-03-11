@@ -2,10 +2,8 @@ import logging
 
 from uuid import uuid4
 
-from src.utils.constants import *
-
 logger = logging.getLogger(__name__)
-logger.setLevel(DEFAULT_LOG_LEVEL)
+logger.setLevel(logging.DEBUG)
 
 
 class Data(object):

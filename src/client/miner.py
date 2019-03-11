@@ -16,7 +16,7 @@ from src.utils.utils import encode_IP_port_properly, create_proper_url_string, J
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(DEFAULT_LOG_LEVEL)
+logger.setLevel(logging.DEBUG)
 
 
 class Miner(object):
@@ -125,7 +125,8 @@ class Miner(object):
             if len(self.neighbours) <= MAX_NEIGHBOURS:
                 self.neighbours.add(encode_IP_port_properly(*neighbour))
 
-        logger.debug(f"DONE - 'Miner' object created.")
+        logger.info("Created 'Miner' object.")
+        logger.debug(f"'Miner' object created.")
 
 
 
@@ -373,7 +374,7 @@ class Miner(object):
                 logger.debug(f"Data of neighbour: '{neighbour}' added.")
 
             else:
-                logger.debug(f"Response of neighbour: '{neighbour}' has bad status_code: '{response.status_code}'")
+                logger.warning(f"Response of neighbour: '{neighbour}' has bad status_code: '{response.status_code}'")
 
         if old_data == self.unprocessed_data:
             logger.info(f"Synced unprocessed data with neighbours -> No new data.")
@@ -398,15 +399,15 @@ class Miner(object):
         # in: list of Data objects to check
         # out: list of Data objects to mine
 
-        logger.debug(f"Check if data is not processed ... - data: {data}")
+        logger.debug(f"Check if data is not processed ... - data.id: '{data.id}', data.message: '{data.message}'")
 
         for block in self.blockchain.chain:
             if block.data == data:
 
-                logger.debug(f"Data is not processed: - data: {data}")
+                logger.debug(f"Data is not processed: - data.id: '{data.id}', data.message: '{data.message}'")
                 return True
 
-        logger.debug(f"Data is already processed: - data: {data}")
+        logger.debug(f"Data is already processed: - data.id: '{data.id}', data.message: '{data.message}'")
         return False
 
 
@@ -449,7 +450,7 @@ class Miner(object):
                             return
 
                 else:
-                    logger.debug(f"Response of neighbour: '{neighbour}' has bad status_code: '{response.status_code}'")
+                    logger.warning(f"Response of neighbour: '{neighbour}' has bad status_code: '{response.status_code}'")
 
         if length_old_neighbours < len(self.neighbours):
             logger.info(f"Updated neighbours -> New neighbours added.")
@@ -489,12 +490,12 @@ class Miner(object):
                 # chain longer and valid?
                 if length > max_length and self.is_chain_valid(chain):
 
-                    logger.debug(f"New chain is longer. - neighbour: '{neighbour}', length of old chain: {max_length}, length of chain: {length}")
+                    logger.debug(f"New chain is longer. - neighbour: '{neighbour}', length of old chain: '{max_length}'', length of chain: '{length}'")
                     max_length = length
                     new_chain = chain
 
             else:
-                logger.debug(f"Response of neighbour: '{neighbour}' has bad status_code: '{response.status_code}'")
+                logger.warning(f"Response of neighbour: '{neighbour}' has bad status_code: '{response.status_code}'")
 
             # replace local chain with longest valid chain of all neighbours network
             if new_chain:
@@ -525,11 +526,11 @@ class Miner(object):
             if len(self.unprocessed_data) > 0:
 
                 data = self.unprocessed_data.pop()
-                logger.debug(f"There are local unprocessed data. - data: '{data}'")
+                logger.debug(f"There is local unprocessed data. - data.id: '{data.id}', data.message: '{data.message}'")
 
                 if not self.is_data_unprocessed(data):
 
-                    logger.debug(f"Data is not processed -> mine new block. - data: '{data}'")
+                    logger.debug(f"Data is not processed -> mine new block. - data.id: '{data.id}', data.message: '{data.message}'")
 
                     last_block = self.blockchain.last_block
                     last_proof = last_block.proof
@@ -589,15 +590,12 @@ class Miner(object):
             ValueError: Will be raised if ``difficulty`` is not a positive integer value.
         """
 
-        logger.debug(f"Proof of Work valid? - last_proof: {last_proof}, proof: {proof}, difficulty: {difficulty}")
-
         if difficulty <= 0:
             raise ValueError("'difficulty' has to be a positive integer value.")
 
         guess = "{}{}".format(last_proof, proof).encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
 
-        logger.debug(f"Hash value is: {guess_hash}")
 
         # hash ends with `difficulty` trailing 0?
         return guess_hash[-difficulty:] == "0" * difficulty

@@ -1,5 +1,4 @@
 import hashlib
-import logging
 
 from src.blockchain.data import Data
 from src.blockchain.block import Block
@@ -31,9 +30,10 @@ SEND_CHAIN_KEY = "chain"
 SEND_NEIGHBOURS_KEY = "neighbours"
 SEND_DATA_KEY = "data"
 
+MESSAGE_PARAM = "message"
+
 GOSSIP_TIME_SECONDS = 5
 CHAIN_SYNC_TIME_SECONDS = 5
 UNPROCESS_DATA_SYNC_TIME_SECONDS = 5
 
-DEFAULT_LOG_LEVEL = logging.DEBUG
 LOGGING_FORMAT = "[%(asctime)s - %(filename)s:%(lineno)s - %(levelname)s - %(funcName)s]: %(message)s"
