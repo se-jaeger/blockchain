@@ -1,4 +1,11 @@
+import logging
+
 from uuid import uuid4
+
+from src.utils.constants import *
+
+logger = logging.getLogger(__name__)
+logger.setLevel(DEFAULT_LOG_LEVEL)
 
 
 class Data(object):
@@ -17,6 +24,10 @@ class Data(object):
             ValueError: Gets raised if ``message`` is not a string.
         """
 
+        logger.info("Create 'Data' object.")
+        logger.debug(f"Arguments - message: {message}")
+
+        logger.debug("Init parent Class.")
         super().__init__()
 
         if not isinstance(message, str):
@@ -24,6 +35,9 @@ class Data(object):
 
         self._id = str(uuid4()).replace("-", "")
         self._message = message
+
+        logger.info("Created 'Data' object.")
+        logger.debug(f"'Data' object created.")
 
 
     def __hash__(self):
