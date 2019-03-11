@@ -6,7 +6,6 @@ from src.blockchain.data import Data
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 class Block(object):
@@ -29,7 +28,6 @@ class Block(object):
 
         """
 
-        logger.info("Create 'Block' object.")
         logger.debug(f"Arguments - index: {index}, data.id: {data.id if isinstance(data, Data) else None}, data.message: {data.message if isinstance(data, Data) else None}, proof: {proof}, previous_hash: {previous_hash}")
 
         logger.debug("Init parent Class.")

@@ -12,7 +12,6 @@ from src.utils.utils import encode_file_path_properly
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 class Blockchain(object):
@@ -27,7 +26,6 @@ class Blockchain(object):
             json_format (bool): Use JSON format for chain? Otherwise pickle is used.
         """
 
-        logger.info("Create 'Blockchain' object.")
         logger.debug(f"Arguments - path_to_chain: {path_to_chain}, json_format: {json_format}")
 
         logger.debug("Init parent Class.")
