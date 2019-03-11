@@ -2,6 +2,7 @@ import os
 import shutil
 import pytest
 
+from src.blockchain.data import Data
 from src.utils.constants import GENESIS_BLOCK
 from src.blockchain.blockchain import Blockchain
 from src.utils.utils import encode_file_path_properly
@@ -43,8 +44,8 @@ def test_constructor(json_format, clean_chain_file_fixture):
 def test_add_new_block(json_format, clean_chain_file_fixture):
     blockchain = Blockchain(path_to_chain=path_to_chain, json_format=json_format)
 
-    blockchain.add_new_block(data="second block", proof=4711, previous_hash="dummy hash value of previous block")
-    blockchain.add_new_block(data="third block", proof=42, previous_hash="dummy hash value of previous block - 2")
+    blockchain.add_new_block(data=Data("second block"), proof=4711, previous_hash="e59be601c9213694f0b72534148199b24d1ed7c1c29c02ba4602e780015a7663")
+    blockchain.add_new_block(data=Data("third block"), proof=42, previous_hash="637ae601c9213694f0b72534148199b24d1ed7c1c29c02ba4602e780015a09ab")
 
     block_0 = blockchain.chain[0]
     block_1 = blockchain.chain[1]

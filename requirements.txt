@@ -20,3 +20,4 @@ sphinx
 pytest-cov
 jsonpickle
 Click
+flask

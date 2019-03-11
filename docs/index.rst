@@ -1,26 +1,36 @@
 ==========
-blockchain
+Blockchain
 ==========
 
-This is the documentation of **blockchain**.
+This is the documentation of **Blockchain**.
 
-.. note::
 
-    This is the main page of your project's `Sphinx`_ documentation.
-    It is formatted in `reStructuredText`_. Add additional pages
-    by creating rst-files in ``docs`` and adding them to the `toctree`_ below.
-    Use then `references`_ in order to link them from this page, e.g.
-    :ref:`authors` and :ref:`changes`.
+How does this Blockchain implementation work?
+=============================================
 
-    It is also possible to refer to the documentation of other Python packages
-    with the `Python domain syntax`_. By default you can reference the
-    documentation of `Sphinx`_, `Python`_, `NumPy`_, `SciPy`_, `matplotlib`_,
-    `Pandas`_, `Scikit-Learn`_. You can add more by extending the
-    ``intersphinx_mapping`` in your Sphinx's ``conf.py``.
+**Short Disclaimer:**
+It is just a private ``Python 3.7.2`` project. Its purposes is to get a little bit familiar with the Python projects and the concepts of Blockchains.
+Therefore it is not intended for production usage and any warranties are excluded.
 
-    The pretty useful extension `autodoc`_ is activated by default and lets
-    you include documentation from docstrings. Docstrings can be written in
-    `Google style`_ (recommended!), `NumPy style`_ and `classical style`_.
+
+This implementation produces a simple ``CLI`` and a ``Miner``. It is necessary to get up and running a local Miner.
+The CLI then uses the Miners ``REST`` interface to interact with it.
+Created ``messages`` get synchronized with all other known Miners (``neighbours``) in the Blockchain network.
+A Miner asks periodically all its neighbours (if not max amount of neighbours is reached) to send unknown Miner and connects to them.
+Also in a periodical manner, Miner synchronize their local Blockchain with the chains of there neighbours and just use the longest valid chain in the network.
+
+
+Proof of Work
+=============
+
+Very simple implementation of a ``Proof of Work`` algorithm.
+The ``SHA-256`` hash value of the concatenation of the previous ``proof`` and the ``proof`` of the new Block has to start with ``difficulty`` trailing 0s.
+
+
+Improvements
+============
+
+- Miner endpoint (health) to check availability and provide opportunity to delete a neighbour.
 
 
 Contents
