@@ -1,6 +1,13 @@
+import logging
+
 from time import time
 
+from src.utils.constants import *
 from src.blockchain.data import Data
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(DEFAULT_LOG_LEVEL)
 
 
 class Block(object):
@@ -23,27 +30,42 @@ class Block(object):
 
         """
 
+        logger.info("Create 'Block' object.")
+        logger.debug(f"Arguments - index: {index}, data.id: {data.id}, data.message: {data.message}, proof: {proof}, previous_hash: {previous_hash}")
+
+        logger.debug("Init parent Class.")
         super().__init__()
 
         if index == 0 and proof == None and previous_hash == None:
+
+            logger.debug("Genesis Block -> no type checks ...")
 
             # Genesis Block is ok. For all others check constraints.
             pass
 
         else:
 
+            logger.debug(f"Type checks: 'index' ...")
+
             if not isinstance(index, int) or index < 0:
                 raise ValueError("Index has incorrect type or value!")
+
+            logger.debug(f"Type checks: 'data' ...")
 
             if not isinstance(data, Data):
                 raise ValueError("Data is not a object of class 'Data'.")
 
+            logger.debug(f"Type checks: 'proof' ...")
+
             if not isinstance(proof, int):
                 raise ValueError("Proof has incorrect type!")
+
+            logger.debug(f"Type checks: 'previous_hash' ...")
 
             if not isinstance(previous_hash, str) or len(previous_hash) != 64:
                 raise ValueError("Previous hash has incorrect type or wrong length!")
 
+        logger.debug(f"Type checks done: all valid.")
 
         self._index = index
         self._timestamp = time()
@@ -51,8 +73,11 @@ class Block(object):
         self._proof = proof
         self._previous_hash = previous_hash
 
+        logger.info("Created 'Block' object.")
+        logger.debug(f"'Block' object created.")
 
-    def __eq__(self, other) -> bool:
+
+    def __eq__(self, other: Block) -> bool:
         """
 
         Method for comparing two ``Block`` objects.
@@ -112,7 +137,7 @@ class Block(object):
         return self._timestamp
 
     @property
-    def data(self) -> object:
+    def data(self) -> Data:
         return self._data
 
     @property
