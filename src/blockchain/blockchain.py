@@ -1,13 +1,18 @@
 import os
 import time
 import pickle
+import logging
 import jsonpickle
 
+from src.utils.constants import *
 from src.blockchain.data import Data
 from src.blockchain.block import Block
-from src.utils.constants import GENESIS_BLOCK
 from src.utils.errors import ChainNotFoundError
 from src.utils.utils import encode_file_path_properly
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(DEFAULT_LOG_LEVEL)
 
 
 class Blockchain(object):
@@ -22,6 +27,10 @@ class Blockchain(object):
             json_format (bool): Use JSON format for chain? Otherwise pickle is used.
         """
 
+        logger.info("Create 'Blockchain' object.")
+        logger.debug(f"Arguments - path_to_chain: {path_to_chain}, json_format: {json_format}")
+
+        logger.debug("Init parent Class.")
         super().__init__()
 
         self._path_to_chain = encode_file_path_properly(path_to_chain)
@@ -29,15 +38,25 @@ class Blockchain(object):
 
         # if local chain exists, load it
         if os.path.isfile(self.path_to_chain):
+
+            logger.debug(f"Load existing chain from disc ...")
             self.chain = self._load_chain()
+            logger.debug(f"Existing chain loaded.")
 
         else:
+            logger.debug(f"Create new chain ...")
+
             # if no local chain exists, create the genesis block
             self.chain = [GENESIS_BLOCK]
 
             # make sure that chain is saved to disc
             self._save_chain()
             self.chain = self._load_chain()
+
+            logger.debug(f"New chain created.")
+
+        logger.info("Created 'Blockchain' object.")
+        logger.debug(f"'Blockchain' object created.")
 
 
     def _load_chain(self) -> list:
@@ -53,6 +72,8 @@ class Blockchain(object):
 
         """
 
+        logger.debug(f"Loading chain from disc ...")
+
         path_to_chain = encode_file_path_properly(self.path_to_chain)
 
         # handle no existing chain
@@ -63,14 +84,19 @@ class Blockchain(object):
         if self.json_format:
             with open(path_to_chain, mode="r") as chain_file:
 
+                logger.debug(f"Decode as JSON - json_format: {self.json_format}")
+
                 # TODO: handle errors: corrupt data, ...
                 chain = jsonpickle.decode(chain_file.read())
         else:
             with open(path_to_chain, mode="rb") as chain_file:
 
+                logger.debug(f"Decode with pickle - json_format: {self.json_format}")
+
                 # TODO: handle errors: corrupt data, ...
                 chain = pickle.load(chain_file)
 
+        logger.debug(f"Chain loaded.")
         return chain
 
 
@@ -81,27 +107,40 @@ class Blockchain(object):
 
         """
 
+        logger.debug(f"Saving chain from disc ...")
+
         path_to_chain = encode_file_path_properly(self.path_to_chain)
 
         # if chain exists, first rename the old one
         if os.path.isfile(path_to_chain):
+
+            logger.debug(f"Rename existing chain file.")
+
             filename, file_extension = os.path.splitext(path_to_chain)
             os.rename(path_to_chain, filename + "_" + time.strftime("%d-%m-%Y_%H:%M:%S", time.localtime()) + file_extension)
 
         # create intermediate directories if necessary
         elif not os.path.isdir(os.path.dirname(path_to_chain)):
+
+            logger.debug(f"Create intermediate directories.")
             os.makedirs(os.path.dirname(path_to_chain))
 
         # depending on serialization format serialize chain to disc
         if self.json_format:
             with open(path_to_chain, "w") as chain_file:
+
+                logger.debug(f"Encode as JSON - json_format: {self.json_format}")
                 chain_file.write(jsonpickle.encode(self.chain))
         else:
             with open(path_to_chain, "wb") as chain_file:
+
+                logger.debug(f"Encode with pickle - json_format: {self.json_format}")
                 pickle.dump(self.chain, chain_file)
 
+        logger.debug(f"Chain saved.")
 
-    def add_new_block(self, data: Data, proof: int, previous_hash: str) -> None:
+
+    def add_new_block(self, data: Data, proof: int, previous_hash: str) -> Block:
         """
 
         Adds a new Block to the existing chain.
@@ -112,16 +151,17 @@ class Blockchain(object):
             previous_hash (str): Hash value of previous block in chain.
         """
 
+        logger.debug(f"Create and add new block ... - data: {data}, proof: {proof}, previous_hash: {previous_hash}")
+
         block = Block(index=len(self.chain), data=data, proof=proof, previous_hash=previous_hash)
         self.chain.append(block)
 
         #TODO: good idea? -> hack to save actual chain..
         self._save_chain()
 
+        logger.debug(f"New block added. - block.index: {block.index}, block.proof: {block.proof}, block.previous_hash: {block.previous_hash}, block.timestamp: {block.timestamp}, block.data.id: {block.data.id}, block.data.message: {block.data.message}")
 
-    def __repr__(self) -> str:
-        # TODO: print blockckain
-        pass
+        return block
 
 
     @property
