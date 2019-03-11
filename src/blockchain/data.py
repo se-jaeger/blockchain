@@ -3,7 +3,6 @@ import logging
 from uuid import uuid4
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 class Data(object):
@@ -22,7 +21,6 @@ class Data(object):
             ValueError: Gets raised if ``message`` is not a string.
         """
 
-        logger.info("Create 'Data' object.")
         logger.debug(f"Arguments - message: {message}")
 
         logger.debug("Init parent Class.")

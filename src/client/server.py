@@ -7,10 +7,11 @@ from src.utils.constants import *
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 def start_server(queue: Queue):
+
+    logger.debug(f"Create and init server ...")
 
     app = Flask(__name__)
 
@@ -26,7 +27,7 @@ def start_server(queue: Queue):
             logger.debug(f"URL Parameter: '{MESSAGE_PARAM}' is missing.")
             return jsonify({"message": "No Message added! - Missing data..."}), HTTP_BAD
 
-        queue.put_nowait({ADD_KEY: message})
+        queue.put_nowait((ADD_KEY, message))
 
         response = {"message": "Message added!",
                     "more_information": "Will be mined in a future block."
@@ -42,7 +43,7 @@ def start_server(queue: Queue):
         logger.debug(f"'{request.method}' at endpoint: '{CHAIN_ENDPOINT}'")
 
         parent_connection, child_connection = Pipe()
-        queue.put_nowait({SEND_CHAIN_KEY: parent_connection})
+        queue.put_nowait((SEND_CHAIN_KEY, parent_connection))
 
         response = child_connection.recv()
 
@@ -56,7 +57,7 @@ def start_server(queue: Queue):
         logger.debug(f"'{request.method}' at endpoint: '{NEIGHBOURS_ENDPOINT}'")
 
         parent_connection, child_connection = Pipe()
-        queue.put_nowait({SEND_NEIGHBOURS_KEY: parent_connection})
+        queue.put_nowait((SEND_NEIGHBOURS_KEY, parent_connection))
 
         logger.debug(f"Got neighbours -> send as response.. - HTTP status: '{HTTP_OK}'")
         response = child_connection.recv()
@@ -70,7 +71,7 @@ def start_server(queue: Queue):
         logger.debug(f"'{request.method}' at endpoint: '{DATA_ENDPOINT}'")
 
         parent_connection, child_connection = Pipe()
-        queue.put_nowait({SEND_DATA_KEY: parent_connection})
+        queue.put_nowait((SEND_DATA_KEY, parent_connection))
 
         response = child_connection.recv()
 
@@ -86,4 +87,5 @@ def start_server(queue: Queue):
         return jsonify({"message": "'{}' is not a valid endpoint!".format(path)}), HTTP_NOT_FOUND
 
 
+    logger.debug(f"Server created and initialized.")
     app.run(HOST_DEFAULT, PORT_DEFAULT)

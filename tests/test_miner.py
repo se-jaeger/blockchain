@@ -140,7 +140,7 @@ def test_is_chain_valid__valid_chain(json_format, clean_chain_file_fixture):
     second_block_hash = miner.hash(miner.blockchain.last_block)
     miner.blockchain.add_new_block(data=Data("Some more test data."), proof=423135, previous_hash=second_block_hash)
 
-    assert miner.is_chain_valid(miner.blockchain.chain)
+    assert miner.is_chain_valid()
 
 
 @pytest.mark.parametrize("json_format", constructor_json_format)
@@ -156,15 +156,15 @@ def test_is_chain_valid__wrong_genesis(json_format, clean_chain_file_fixture):
 
     # wrong index, correct previous hash
     miner.blockchain.chain[0]._index = 1
-    assert not miner.is_chain_valid(miner.blockchain.chain)
+    assert not miner.is_chain_valid()
 
     # wrong index, wrong previous hash
     miner.blockchain.chain[0]._previous_hash = "e59be601c9213694f0b72534148199b24d1ed7c1c29c02ba4602e780015a7663"
-    assert not miner.is_chain_valid(miner.blockchain.chain)
+    assert not miner.is_chain_valid()
 
     # correct index, wrong previous hash
     miner.blockchain.chain[0]._index = 0
-    assert not miner.is_chain_valid(miner.blockchain.chain)
+    assert not miner.is_chain_valid()
 
 
 @pytest.mark.parametrize("json_format", constructor_json_format)
@@ -180,31 +180,31 @@ def test_is_chain_valid__wrong_block_1(json_format, clean_chain_file_fixture):
 
     # wrong index, correct previous hash, correct proof of work, correct timestamp
     miner.blockchain.chain[1]._index = 42
-    assert not miner.is_chain_valid(miner.blockchain.chain)
+    assert not miner.is_chain_valid()
 
     # wrong index, wrong previous hash, correct proof of work, correct timestamp
     miner.blockchain.chain[1]._previous_hash = None
-    assert not miner.is_chain_valid(miner.blockchain.chain)
+    assert not miner.is_chain_valid()
 
     # wrong index, wrong previous hash, wrong proof of work, correct timestamp
     miner.blockchain.chain[1]._proof = 1234876423876
-    assert not miner.is_chain_valid(miner.blockchain.chain)
+    assert not miner.is_chain_valid()
 
     # wrong index, wrong previous hash, wrong proof of work, wrong timestamp
     miner.blockchain.chain[1]._timestamp = miner.blockchain.chain[0].timestamp
-    assert not miner.is_chain_valid(miner.blockchain.chain)
+    assert not miner.is_chain_valid()
 
     # correct index, wrong previous hash, wrong proof of work, wrong timestamp
     miner.blockchain.chain[1]._index = 1
-    assert not miner.is_chain_valid(miner.blockchain.chain)
+    assert not miner.is_chain_valid()
 
     # correct index, correct previous hash, wrong proof of work, wrong timestamp
     miner.blockchain.chain[1]._previous_hash = genesis_hash
-    assert not miner.is_chain_valid(miner.blockchain.chain)
+    assert not miner.is_chain_valid()
 
     # correct index, correct previous hash, correct proof of work, wrong timestamp
     miner.blockchain.chain[1]._proof = 1406000
-    assert not miner.is_chain_valid(miner.blockchain.chain)
+    assert not miner.is_chain_valid()
 
 
 @pytest.mark.parametrize("json_format", constructor_json_format)
@@ -220,28 +220,28 @@ def test_is_chain_valid__wrong_block_2(json_format, clean_chain_file_fixture):
 
     # wrong index, correct previous hash, correct proof of work, correct timestamp
     miner.blockchain.chain[2]._index = 42
-    assert not miner.is_chain_valid(miner.blockchain.chain)
+    assert not miner.is_chain_valid()
 
     # wrong index, wrong previous hash, correct proof of work, correct timestamp
     miner.blockchain.chain[2]._previous_hash = None
-    assert not miner.is_chain_valid(miner.blockchain.chain)
+    assert not miner.is_chain_valid()
 
     # wrong index, wrong previous hash, wrong proof of work, correct timestamp
     miner.blockchain.chain[2]._proof = 1234876423876
-    assert not miner.is_chain_valid(miner.blockchain.chain)
+    assert not miner.is_chain_valid()
 
     # wrong index, wrong previous hash, wrong proof of work, wrong timestamp
     miner.blockchain.chain[2]._timestamp = miner.blockchain.chain[0].timestamp
-    assert not miner.is_chain_valid(miner.blockchain.chain)
+    assert not miner.is_chain_valid()
 
     # correct index, wrong previous hash, wrong proof of work, wrong timestamp
     miner.blockchain.chain[2]._index = 2
-    assert not miner.is_chain_valid(miner.blockchain.chain)
+    assert not miner.is_chain_valid()
 
     # correct index, correct previous hash, wrong proof of work, wrong timestamp
     miner.blockchain.chain[2]._previous_hash = second_block_hash
-    assert not miner.is_chain_valid(miner.blockchain.chain)
+    assert not miner.is_chain_valid()
 
     # correct index, correct previous hash, correct proof of work, wrong timestamp
     miner.blockchain.chain[2]._proof = 423135
-    assert not miner.is_chain_valid(miner.blockchain.chain)
+    assert not miner.is_chain_valid()

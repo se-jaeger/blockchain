@@ -16,7 +16,6 @@ from src.utils.utils import encode_IP_port_properly, create_proper_url_string, J
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 class Miner(object):
@@ -35,7 +34,7 @@ class Miner(object):
             neighbours (list): List of tuples (IP-Address, port) of known neighbours.
         """
 
-        logger.info("Create 'Miner' object.")
+        logger.info("Create 'Miner' object ...")
         logger.debug(f"Arguments - path_to_chain: {path_to_chain}, json_format: {json_format}, host: {host}, port: {port}, difficulty: {difficulty}, neighbours: {neighbours}")
 
         logger.debug("Init parent Class.")
@@ -112,7 +111,7 @@ class Miner(object):
         logger.debug(f"Check chain ...")
 
         # check if chain is valid
-        if not self.is_chain_valid(self.blockchain.chain):
+        if not self.is_chain_valid():
 
             #TODO: test
             raise ChainNotValidError("Local chain is not valid!")
@@ -136,7 +135,7 @@ class Miner(object):
         Starts the blocking function ``mine()``.
         """
 
-        logger.info("Configure and start 'Miner' background tasks.")
+        logger.info("Configure and start 'Miner' background tasks ...")
 
         update_neighbour_job = ("Gossip Job", Job(interval=timedelta(seconds=GOSSIP_TIME_SECONDS), execute=self.update_neighbours))
         logger.debug(f"Background thread configured: '{update_neighbour_job[0]}' - interval: {GOSSIP_TIME_SECONDS} seconds.")
@@ -215,33 +214,36 @@ class Miner(object):
         if not self._queue.empty():
 
             message = self._queue.get_nowait()
-            logger.debug(f"Processing message: {message} ...")
+            logger.debug(f"Processing message: '{message[0]}'' ...")
 
-            if ADD_KEY in message:
+            if ADD_KEY == message[0]:
 
-                logger.debug(f"Found handle for message with key: {ADD_KEY}")
-                self.new_message(message[ADD_KEY])
+                logger.debug(f"Found handle for message with key: '{ADD_KEY}'")
+                self.new_message(message[1])
 
-            if SEND_CHAIN_KEY in message:
+            if SEND_CHAIN_KEY == message[0]:
 
-                logger.debug(f"Found handle for message with key: {SEND_CHAIN_KEY}")
-                message[SEND_CHAIN_KEY].send({
-                    'chain': jsonpickle.encode(self.blockchain.chain),
-                    'length': len(self.blockchain.chain),
+                logger.debug(f"Found handle for message with key: '{SEND_CHAIN_KEY}'")
+                message[1].send({
+                    "chain": jsonpickle.encode(self.blockchain.chain),
+                    "length": len(self.blockchain.chain),
                 })
 
-            if SEND_NEIGHBOURS_KEY in message:
+            if SEND_NEIGHBOURS_KEY == message[0]:
 
-                logger.debug(f"Found handle for message with key: {SEND_NEIGHBOURS_KEY}")
-                message[SEND_NEIGHBOURS_KEY].send(jsonpickle.encode(self.neighbours))
+                logger.debug(f"Found handle for message with key: '{SEND_NEIGHBOURS_KEY}'")
+                message[1].send({
+                    "neighbours": jsonpickle.encode(self.neighbours),
+                    "length": len(self.neighbours),
+                })
 
-            if SEND_DATA_KEY in message:
+            if SEND_DATA_KEY == message[0]:
 
-                logger.debug(f"Found handle for message with key: {SEND_DATA_KEY}")
-                message[SEND_DATA_KEY].send(jsonpickle.encode(self.unprocessed_data))
+                logger.debug(f"Found handle for message with key: '{SEND_DATA_KEY}'")
+                message[1].send(jsonpickle.encode(self.unprocessed_data))
 
             else:
-                logger.warning(f"Could not find handle for message: {message}")
+                logger.warning(f"Could not find handle for message: '{message[0]}'")
 
 
     def proof_of_work(self, last_proof: int, difficulty: int) -> int:
@@ -277,7 +279,7 @@ class Miner(object):
         return proof
 
 
-    def is_chain_valid(self, chain: list) -> bool:
+    def is_chain_valid(self) -> bool:
         """
 
         Checks if the given ``chain`` satisfies the following rules:
@@ -292,9 +294,6 @@ class Miner(object):
                 - ``proof``: has to be valid -> see: :meth:`~Miner.is_proof_of_work_valid`
                 - ``timestamp``: higher than the timestamp of of preceding block
 
-        Args:
-            chain (list): list of ``Block`` objects forming a blockchain.
-
         Returns:
             bool: ``True`` if ``chain`` is valid, ``False`` otherwise.
         """
@@ -303,7 +302,7 @@ class Miner(object):
 
         previous_block = None
 
-        for index, block in enumerate(chain):
+        for index, block in enumerate(self.blockchain.chain):
 
             # rules for genesis block
             if index == 0:
@@ -377,14 +376,14 @@ class Miner(object):
                 logger.warning(f"Response of neighbour: '{neighbour}' has bad status_code: '{response.status_code}'")
 
         if old_data == self.unprocessed_data:
-            logger.info(f"Synced unprocessed data with neighbours -> No new data.")
+            logger.info(f"Synced unprocessed data -> No new data.")
         else:
-            logger.info(f"Synced unprocessed data with neighbours -> New data.")
+            logger.info(f"Synced unprocessed data -> New data.")
 
         logger.debug(f"Syncing unprocessed data done.")
 
 
-    def is_data_unprocessed(self, data: Data) -> bool:
+    def is_data_processed(self, data: Data) -> bool:
         """
         Checks if ``data`` is already in local chain.
 
@@ -504,9 +503,9 @@ class Miner(object):
                 logger.debug(f"Longer chain added.")
 
         if old_chain == self.blockchain.chain:
-            logger.info(f"Updated neighbours -> Have already longest chain.")
+            logger.info(f"Synced chain -> Have already longest chain.")
         else:
-            logger.info(f"Syncing chain -> New (longer) chain added.")
+            logger.info(f"Synced chain -> New (longer) chain added.")
 
         logger.debug(f"Syncing chain done.")
 
@@ -528,7 +527,7 @@ class Miner(object):
                 data = self.unprocessed_data.pop()
                 logger.debug(f"There is local unprocessed data. - data.id: '{data.id}', data.message: '{data.message}'")
 
-                if not self.is_data_unprocessed(data):
+                if not self.is_data_processed(data):
 
                     logger.debug(f"Data is not processed -> mine new block. - data.id: '{data.id}', data.message: '{data.message}'")
 
