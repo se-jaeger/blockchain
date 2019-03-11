@@ -24,7 +24,7 @@ def clean_chain_file_fixture():
 @pytest.mark.parametrize("json_format", constructor_json_format)
 def test_constructor(json_format, clean_chain_file_fixture):
 
-    miner = Miner(path_to_chain=path_to_chain, json_format=json_format, host=HOST_DEFAULT, port=PORT_DEFAULT, difficulty=DIFFICULTY_DEFAULT, neighbours=[("localhost", 12345)])
+    miner = Miner(path_to_chain=path_to_chain, json_format=json_format, host=DEFAULT_HOST, port=DEFAULT_PORT, difficulty=DEFAULT_DIFFICULTY, neighbours=[("localhost", 12345)])
 
     assert isinstance(miner, Miner)
     assert miner.blockchain.chain[0] == GENESIS_BLOCK
@@ -35,48 +35,48 @@ def test_constructor(json_format, clean_chain_file_fixture):
 def test_constructor_invalid_path_to_chain(path_to_chain, clean_chain_file_fixture):
 
     with pytest.raises(ValueError, match="'path_to_chain' has to be of type string!"):
-        Miner(path_to_chain=path_to_chain, json_format=True, host=HOST_DEFAULT, port=PORT_DEFAULT, difficulty=DIFFICULTY_DEFAULT, neighbours=[("localhost", 12345)])
+        Miner(path_to_chain=path_to_chain, json_format=True, host=DEFAULT_HOST, port=DEFAULT_PORT, difficulty=DEFAULT_DIFFICULTY, neighbours=[("localhost", 12345)])
 
 
 @pytest.mark.parametrize("json_format", [123, 47.11, ["abc", "asdf"], {"abc", "asdf"}, ("abc", "asdf")])
 def test_constructor_invalid_json_format(json_format, clean_chain_file_fixture):
 
     with pytest.raises(ValueError, match="'json_format' has to be a boolean value!"):
-        Miner(path_to_chain=path_to_chain, json_format=json_format, host=HOST_DEFAULT, port=PORT_DEFAULT, difficulty=DIFFICULTY_DEFAULT, neighbours=[("localhost", 12345)])
+        Miner(path_to_chain=path_to_chain, json_format=json_format, host=DEFAULT_HOST, port=DEFAULT_PORT, difficulty=DEFAULT_DIFFICULTY, neighbours=[("localhost", 12345)])
 
 
 @pytest.mark.parametrize("host", [123, 47.11, True, ["abc", "asdf"], {"abc", "asdf"}, ("abc", "asdf")])
 def test_constructor_invalid_host(host, clean_chain_file_fixture):
 
     with pytest.raises(ValueError, match="'host'"):
-        Miner(path_to_chain=path_to_chain, json_format=True, host=host, port=PORT_DEFAULT, difficulty=DIFFICULTY_DEFAULT, neighbours=[("localhost", 12345)])
+        Miner(path_to_chain=path_to_chain, json_format=True, host=host, port=DEFAULT_PORT, difficulty=DEFAULT_DIFFICULTY, neighbours=[("localhost", 12345)])
 
 
 @pytest.mark.parametrize("port", [-4, 65536, 47.11, True, ["abc", "asdf"], {"abc", "asdf"}, ("abc", "asdf")])
 def test_constructor_invalid_port(port, clean_chain_file_fixture):
 
     with pytest.raises(ValueError, match="'port' is of wrong type or out of range!"):
-        Miner(path_to_chain=path_to_chain, json_format=True, host=HOST_DEFAULT, port=port, difficulty=DIFFICULTY_DEFAULT, neighbours=[("localhost", 12345)])
+        Miner(path_to_chain=path_to_chain, json_format=True, host=DEFAULT_HOST, port=port, difficulty=DEFAULT_DIFFICULTY, neighbours=[("localhost", 12345)])
 
 
 @pytest.mark.parametrize("difficulty", [-1, 0, 47.11, True, ["abc", "asdf"], {"abc", "asdf"}, ("abc", "asdf")])
 def test_constructor_invalid_difficulty(difficulty, clean_chain_file_fixture):
 
     with pytest.raises(ValueError, match="'difficulty' is of wrong type or lower than 1!"):
-        Miner(path_to_chain=path_to_chain, json_format=True, host=HOST_DEFAULT, port=PORT_DEFAULT, difficulty=difficulty, neighbours=[("localhost", 12345)])
+        Miner(path_to_chain=path_to_chain, json_format=True, host=DEFAULT_HOST, port=DEFAULT_PORT, difficulty=difficulty, neighbours=[("localhost", 12345)])
 
 
 @pytest.mark.parametrize("neighbours", [65536, 47.11, True, {"abc", "asdf"}, ("abc", "asdf"), [("locaasdflhost", 12345)], [(2, 12345)], [(False, 12345)], [(12.23, 12345)], [("localhost", -1)], [("localhost", 65536)]])
 def test_constructor_invalid_neighbours(neighbours, clean_chain_file_fixture):
 
     with pytest.raises(ValueError, match="'neighbours'"):
-        Miner(path_to_chain=path_to_chain, json_format=True, host=HOST_DEFAULT, port=PORT_DEFAULT, difficulty=DIFFICULTY_DEFAULT, neighbours=neighbours)
+        Miner(path_to_chain=path_to_chain, json_format=True, host=DEFAULT_HOST, port=DEFAULT_PORT, difficulty=DEFAULT_DIFFICULTY, neighbours=neighbours)
 
 
 @pytest.mark.parametrize("json_format", constructor_json_format)
 def test_hash(json_format, clean_chain_file_fixture):
 
-    miner = Miner(path_to_chain=path_to_chain, json_format=json_format, host=HOST_DEFAULT, port=PORT_DEFAULT, difficulty=DIFFICULTY_DEFAULT)
+    miner = Miner(path_to_chain=path_to_chain, json_format=json_format, host=DEFAULT_HOST, port=DEFAULT_PORT, difficulty=DEFAULT_DIFFICULTY)
 
     assert GENESIS_BLOCK_HASH == miner.hash(GENESIS_BLOCK)
 
@@ -114,7 +114,7 @@ def test_is_proof_of_work_valid():
 @pytest.mark.parametrize("json_format", constructor_json_format)
 def test_proof_of_work(json_format, clean_chain_file_fixture):
 
-    miner = Miner(path_to_chain=path_to_chain, json_format=json_format, host=HOST_DEFAULT, port=PORT_DEFAULT, difficulty=DIFFICULTY_DEFAULT)
+    miner = Miner(path_to_chain=path_to_chain, json_format=json_format, host=DEFAULT_HOST, port=DEFAULT_PORT, difficulty=DEFAULT_DIFFICULTY)
 
     proof_of_work_difficulty_1 = miner.proof_of_work(last_proof=None, difficulty=1)
     proof_of_work_difficulty_2 = miner.proof_of_work(last_proof=None, difficulty=2)
@@ -132,7 +132,7 @@ def test_proof_of_work(json_format, clean_chain_file_fixture):
 @pytest.mark.parametrize("json_format", constructor_json_format)
 def test_is_chain_valid__valid_chain(json_format, clean_chain_file_fixture):
 
-    miner = Miner(path_to_chain=path_to_chain, json_format=json_format, host=HOST_DEFAULT, port=PORT_DEFAULT, difficulty=DIFFICULTY_DEFAULT)
+    miner = Miner(path_to_chain=path_to_chain, json_format=json_format, host=DEFAULT_HOST, port=DEFAULT_PORT, difficulty=DEFAULT_DIFFICULTY)
 
     genesis_hash = miner.hash(miner.blockchain.last_block)
     miner.blockchain.add_new_block(data=Data("Some test data."), proof=1406000, previous_hash=genesis_hash)
@@ -146,7 +146,7 @@ def test_is_chain_valid__valid_chain(json_format, clean_chain_file_fixture):
 @pytest.mark.parametrize("json_format", constructor_json_format)
 def test_is_chain_valid__wrong_genesis(json_format, clean_chain_file_fixture):
 
-    miner = Miner(path_to_chain=path_to_chain, json_format=json_format, host=HOST_DEFAULT, port=PORT_DEFAULT, difficulty=DIFFICULTY_DEFAULT)
+    miner = Miner(path_to_chain=path_to_chain, json_format=json_format, host=DEFAULT_HOST, port=DEFAULT_PORT, difficulty=DEFAULT_DIFFICULTY)
 
     genesis_hash = miner.hash(miner.blockchain.last_block)
     miner.blockchain.add_new_block(data=Data("Some test data."), proof=1406000, previous_hash=genesis_hash)
@@ -170,7 +170,7 @@ def test_is_chain_valid__wrong_genesis(json_format, clean_chain_file_fixture):
 @pytest.mark.parametrize("json_format", constructor_json_format)
 def test_is_chain_valid__wrong_block_1(json_format, clean_chain_file_fixture):
 
-    miner = Miner(path_to_chain=path_to_chain, json_format=json_format, host=HOST_DEFAULT, port=PORT_DEFAULT, difficulty=DIFFICULTY_DEFAULT)
+    miner = Miner(path_to_chain=path_to_chain, json_format=json_format, host=DEFAULT_HOST, port=DEFAULT_PORT, difficulty=DEFAULT_DIFFICULTY)
 
     genesis_hash = miner.hash(miner.blockchain.last_block)
     miner.blockchain.add_new_block(data=Data("Some test data."), proof=1406000, previous_hash=genesis_hash)
@@ -210,7 +210,7 @@ def test_is_chain_valid__wrong_block_1(json_format, clean_chain_file_fixture):
 @pytest.mark.parametrize("json_format", constructor_json_format)
 def test_is_chain_valid__wrong_block_2(json_format, clean_chain_file_fixture):
 
-    miner = Miner(path_to_chain=path_to_chain, json_format=json_format, host=HOST_DEFAULT, port=PORT_DEFAULT, difficulty=DIFFICULTY_DEFAULT)
+    miner = Miner(path_to_chain=path_to_chain, json_format=json_format, host=DEFAULT_HOST, port=DEFAULT_PORT, difficulty=DEFAULT_DIFFICULTY)
 
     genesis_hash = miner.hash(miner.blockchain.last_block)
     miner.blockchain.add_new_block(data=Data("Some test data."), proof=1406000, previous_hash=genesis_hash)

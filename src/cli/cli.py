@@ -47,11 +47,11 @@ def get():
 
 @miner.command()
 @click.argument("chain_path")
-@click.option("--json", default=True, type=bool)
-@click.option("--neighbours", default=[], type=list)
-@click.option("--port", default=PORT_DEFAULT, type=int)
-@click.option("--host", default=HOST_DEFAULT, type=str)
-@click.option("--difficulty", default=DIFFICULTY_DEFAULT, type=int)
+@click.option("--json", default=DEFAULT_JSON, type=bool)
+@click.option("--neighbours", default=DEFAULT_NEIGHBOURS, type=list)
+@click.option("--port", default=DEFAULT_PORT, type=int)
+@click.option("--host", default=DEFAULT_HOST, type=str)
+@click.option("--difficulty", default=DEFAULT_DIFFICULTY, type=int)
 def start(chain_path: str, json: bool, host: str, port: int, difficulty: int, neighbours: list):
 
     miner = Miner(path_to_chain=chain_path, json_format=json, host=host, port=port, difficulty=difficulty, neighbours=neighbours)
@@ -71,8 +71,8 @@ def start(chain_path: str, json: bool, host: str, port: int, difficulty: int, ne
 
 @cli.command()
 @click.argument("message", type=str)
-@click.option("--port", default=PORT_DEFAULT, type=int)
-@click.option("--host", default=HOST_DEFAULT, type=str)
+@click.option("--port", default=DEFAULT_PORT, type=int)
+@click.option("--host", default=DEFAULT_HOST, type=str)
 def add(message, host, port):
     """
     Send a message to known miners.
@@ -91,8 +91,8 @@ def add(message, host, port):
 
 
 @get.command()
-@click.option("--port", default=PORT_DEFAULT, type=int)
-@click.option("--host", default=HOST_DEFAULT, type=str)
+@click.option("--port", default=DEFAULT_PORT, type=int)
+@click.option("--host", default=DEFAULT_HOST, type=str)
 def chain(host, port):
     """
     Get the actual chain.
@@ -113,8 +113,8 @@ def chain(host, port):
 
 
 @get.command()
-@click.option("--port", default=PORT_DEFAULT, type=int)
-@click.option("--host", default=HOST_DEFAULT, type=str)
+@click.option("--port", default=DEFAULT_PORT, type=int)
+@click.option("--host", default=DEFAULT_HOST, type=str)
 def neighbours(host, port):
     """
     Get the actual neighbours
