@@ -111,7 +111,7 @@ class Miner(object):
         logger.debug(f"Check chain ...")
 
         # check if chain is valid
-        if not self.is_chain_valid(self.blockchain.chain):
+        if not self.is_chain_valid():
 
             #TODO: test
             raise ChainNotValidError("Local chain is not valid!")
@@ -279,7 +279,7 @@ class Miner(object):
         return proof
 
 
-    def is_chain_valid(self, chain: list) -> bool:
+    def is_chain_valid(self) -> bool:
         """
 
         Checks if the given ``chain`` satisfies the following rules:
@@ -294,9 +294,6 @@ class Miner(object):
                 - ``proof``: has to be valid -> see: :meth:`~Miner.is_proof_of_work_valid`
                 - ``timestamp``: higher than the timestamp of of preceding block
 
-        Args:
-            chain (list): list of ``Block`` objects forming a blockchain.
-
         Returns:
             bool: ``True`` if ``chain`` is valid, ``False`` otherwise.
         """
@@ -305,7 +302,7 @@ class Miner(object):
 
         previous_block = None
 
-        for index, block in enumerate(chain):
+        for index, block in enumerate(self.blockchain.chain):
 
             # rules for genesis block
             if index == 0:
