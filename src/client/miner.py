@@ -386,7 +386,7 @@ class Miner(object):
         logger.debug(f"Syncing unprocessed data done.")
 
 
-    def is_data_unprocessed(self, data: Data) -> bool:
+    def is_data_processed(self, data: Data) -> bool:
         """
         Checks if ``data`` is already in local chain.
 
@@ -530,7 +530,7 @@ class Miner(object):
                 data = self.unprocessed_data.pop()
                 logger.debug(f"There is local unprocessed data. - data.id: '{data.id}', data.message: '{data.message}'")
 
-                if not self.is_data_unprocessed(data):
+                if not self.is_data_processed(data):
 
                     logger.debug(f"Data is not processed -> mine new block. - data.id: '{data.id}', data.message: '{data.message}'")
 

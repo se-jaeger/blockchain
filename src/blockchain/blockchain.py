@@ -38,7 +38,7 @@ class Blockchain(object):
         if os.path.isfile(self.path_to_chain):
 
             logger.debug(f"Load existing chain from disc ...")
-            self.chain = self._load_chain()
+            self._load_chain()
             logger.debug(f"Existing chain loaded.")
 
         else:
@@ -49,7 +49,7 @@ class Blockchain(object):
 
             # make sure that chain is saved to disc
             self._save_chain()
-            self.chain = self._load_chain()
+            self._load_chain()
 
             logger.debug(f"New chain created.")
 
@@ -57,13 +57,10 @@ class Blockchain(object):
         logger.debug(f"'Blockchain' object created.")
 
 
-    def _load_chain(self) -> list:
+    def _load_chain(self) -> None:
         """
 
         Helper method to load chain from disk. Raises an error if no chain is found.
-
-        Returns:
-            list: Return ``list`` of ``Block`` objects.
 
         Raises:
             ChainNotFoundError: Will be raised if no local chain could be found.
@@ -95,7 +92,7 @@ class Blockchain(object):
                 chain = pickle.load(chain_file)
 
         logger.debug(f"Chain loaded.")
-        return chain
+        self.chain = chain
 
 
     def _save_chain(self) -> None:
