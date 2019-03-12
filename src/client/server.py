@@ -9,7 +9,7 @@ from src.utils.constants import *
 logger = logging.getLogger(__name__)
 
 
-def start_server(queue: Queue):
+def start_server(queue: Queue, port: int):
 
     logger.debug(f"Create and init server ...")
 
@@ -88,4 +88,4 @@ def start_server(queue: Queue):
 
 
     logger.debug(f"Server created and initialized.")
-    app.run(DEFAULT_HOST, DEFAULT_PORT)
+    app.run(host=DEFAULT_HOST, port=port)

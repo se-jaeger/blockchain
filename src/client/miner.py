@@ -150,7 +150,7 @@ class Miner(object):
         logger.debug(f"Background thread configured: '{communicate_job[0]}'.")
 
         self._queue = Queue()
-        self._server_process = Process(target=start_server, args=[self.queue])
+        self._server_process = Process(target=start_server, args=[self.queue, self.port])
         logger.debug(f"'Server Process' configured.")
 
         logger.debug("Start 'Miner' background threads ...")
@@ -563,7 +563,7 @@ class Miner(object):
                 chain = jsonpickle.decode(response.json()['chain'])
 
                 # chain longer and valid?
-                if length > max_length and self.is_chain_valid(chain):
+                if length > max_length and self.is_chain_valid():
 
                     logger.debug(f"New chain is longer. - neighbour: '{neighbour}', length of old chain: '{max_length}'', length of chain: '{length}'")
                     max_length = length
