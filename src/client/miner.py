@@ -162,8 +162,8 @@ class Miner(object):
         communicate_job = ("Communication Job", Job(interval=timedelta(seconds=0), execute=self.communicate))
         logger.debug(f"Background thread configured: '{communicate_job[0]}'.")
 
-        self.queue = Queue()
-        self.server_process = Process(target=start_server, args=[self.queue])
+        self._queue = Queue()
+        self._server_process = Process(target=start_server, args=[self.queue])
         logger.debug(f"'Server Process' configured.")
 
         logger.debug("Start 'Miner' background threads ...")
@@ -734,16 +734,6 @@ class Miner(object):
         return self._server_process
 
 
-    @server_process.setter
-    def server_process(self, server_process: Process) -> None:
-        self._server_process = server_process
-
-
     @property
     def queue(self) -> Process:
         return self._queue
-
-
-    @queue.setter
-    def queue(self, queue: Queue) -> None:
-        self._queue = queue
