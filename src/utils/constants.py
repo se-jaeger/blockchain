@@ -40,3 +40,12 @@ UNPROCESSED_DATA_SYNC_TIME_SECONDS = 2
 MINER_LOG_SIZE = 1 * 1024 * 1024 # 2 MB
 MINER_LOG_FILE = "miner.log"
 LOGGING_FORMAT = "[%(asctime)s - %(filename)-17s:%(lineno)-4s - %(levelname)-7s - %(funcName)-25s]: %(message)s"
+
+
+############## CLI Help messages ##############
+
+PORT_HELP                   = "Port of miner."
+HOST_HELP                   = "IPv4 Address of miner."
+CHAIN_SERIALIZATION_HELP    = "Defines the serialization format of chain file. One of these: ['json', 'pickle']"
+DIFFICULTY_HELP             = "Difficulty of the chain"
+NEIGHBOURS_HELP             = "Comma separated 'host:port' list, e.g.: localhost:23456,localhost:34567"
