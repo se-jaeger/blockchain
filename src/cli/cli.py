@@ -93,8 +93,7 @@ def add(message, host, port):
 @get.command()
 @click.option("--port", default=DEFAULT_PORT, type=int)
 @click.option("--host", default=DEFAULT_HOST, type=str)
-@click.option("--json", default=DEFAULT_JSON, type=bool)
-def chain(host, port, json):
+def chain(host, port):
     """
     Get the actual chain.
     """
@@ -103,11 +102,7 @@ def chain(host, port, json):
 
     if response.status_code == HTTP_OK:
 
-        if json:
-            json = response.json()
-        else:
-            json = jsonpickle.decode(response.json())
-
+        json = response.json()
         length = json['length']
         chain = jsonpickle.decode(json["chain"])
 
@@ -121,8 +116,7 @@ def chain(host, port, json):
 @get.command()
 @click.option("--port", default=DEFAULT_PORT, type=int)
 @click.option("--host", default=DEFAULT_HOST, type=str)
-@click.option("--json", default=DEFAULT_JSON, type=bool)
-def neighbours(host, port, json):
+def neighbours(host, port):
     """
     Get the actual neighbours
     """
@@ -131,11 +125,7 @@ def neighbours(host, port, json):
 
     if response.status_code == HTTP_OK:
 
-        if json:
-            json = response.json()
-        else:
-            json = jsonpickle.decode(response.json())
-
+        json = response.json()
         length = json['length']
         neighbours = jsonpickle.decode(json["neighbours"])
 
