@@ -238,7 +238,7 @@ class Miner(object):
                 logger.debug(f"Found handle for message with key: '{ADD_KEY}'")
                 self.new_message(message[1])
 
-            if SEND_CHAIN_KEY == message[0]:
+            elif SEND_CHAIN_KEY == message[0]:
 
                 logger.debug(f"Found handle for message with key: '{SEND_CHAIN_KEY}'")
                 message[1].send({
@@ -246,7 +246,7 @@ class Miner(object):
                     "length": len(self.blockchain.chain),
                 })
 
-            if SEND_NEIGHBOURS_KEY == message[0]:
+            elif SEND_NEIGHBOURS_KEY == message[0]:
 
                 logger.debug(f"Found handle for message with key: '{SEND_NEIGHBOURS_KEY}'")
                 message[1].send({
@@ -254,7 +254,7 @@ class Miner(object):
                     "length": len(self.neighbours),
                 })
 
-            if SEND_DATA_KEY == message[0]:
+            elif SEND_DATA_KEY == message[0]:
 
                 logger.debug(f"Found handle for message with key: '{SEND_DATA_KEY}'")
                 message[1].send(jsonpickle.encode(self.unprocessed_data))
