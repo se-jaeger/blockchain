@@ -1,5 +1,8 @@
+import os
 import hashlib
 import logging
+import pickle
+
 import requests
 import jsonpickle
 
@@ -107,22 +110,29 @@ class Miner(object):
         self._not_processed_messages = set()
         self._blockchain = Blockchain(path_to_chain=path_to_chain, json_format=json_format)
 
-
         logger.debug(f"Check chain ...")
 
         # check if chain is valid
         if not self.is_chain_valid():
 
             #TODO: test
+            print(self.blockchain.chain)
             raise ChainNotValidError("Local chain is not valid!")
 
         logger.debug(f"Check chain: valid.")
         logger.debug(f"Create neighbours: ...")
 
+        self_encoded = encode_IP_port_properly(self.host, self.port)
+
         for neighbour in neighbours:
 
-            if len(self.neighbours) <= MAX_NEIGHBOURS:
-                self.neighbours.add(encode_IP_port_properly(*neighbour))
+            if len(self.neighbours) < MAX_NEIGHBOURS:
+
+                neighbour_encoded = encode_IP_port_properly(*neighbour)
+
+                # Do not add own address
+                if self_encoded != neighbour_encoded:
+                    self.neighbours.add(neighbour_encoded)
 
         logger.info("Created 'Miner' object.")
         logger.debug(f"'Miner' object created.")
@@ -143,8 +153,11 @@ class Miner(object):
         check_for_longest_chain_job = ("Sync Chain Job", Job(interval=timedelta(seconds=CHAIN_SYNC_TIME_SECONDS), execute=self.check_for_longest_chain))
         logger.debug(f"Background thread configured: '{check_for_longest_chain_job[0]}' - interval: {CHAIN_SYNC_TIME_SECONDS} seconds.")
 
-        fetch_unprocessed_data_job = ("Sync Unprocessed Data Job)", Job(interval=timedelta(seconds=UNPROCESS_DATA_SYNC_TIME_SECONDS), execute=self.fetch_unprocessed_data))
-        logger.debug(f"Background thread configured: '{fetch_unprocessed_data_job[0]}' - interval: {UNPROCESS_DATA_SYNC_TIME_SECONDS} seconds.")
+        fetch_unprocessed_data_job = ("Sync Unprocessed Data Job)", Job(interval=timedelta(seconds=UNPROCESSED_DATA_SYNC_TIME_SECONDS), execute=self.fetch_unprocessed_data))
+        logger.debug(f"Background thread configured: '{fetch_unprocessed_data_job[0]}' - interval: {UNPROCESSED_DATA_SYNC_TIME_SECONDS} seconds.")
+
+        backup_local_chain_job = ("Backup Local Chain Job", Job(interval=timedelta(seconds=BACKUP_LOCAL_CHAIN_TIME_SECONDS), execute=self.backup_local_chain))
+        logger.debug(f"Background thread configured: '{backup_local_chain_job[0]}' - interval: {BACKUP_LOCAL_CHAIN_TIME_SECONDS} seconds.")
 
         communicate_job = ("Communication Job", Job(interval=timedelta(seconds=0), execute=self.communicate))
         logger.debug(f"Background thread configured: '{communicate_job[0]}'.")
@@ -164,6 +177,9 @@ class Miner(object):
         fetch_unprocessed_data_job[1].start()
         logger.debug(f"'{fetch_unprocessed_data_job[0]}' thread started.")
 
+        backup_local_chain_job[1].start()
+        logger.debug(f"'{backup_local_chain_job[0]}' thread started.")
+
         communicate_job[1].start()
         logger.debug(f"'{communicate_job[0]}' thread started.")
 
@@ -173,8 +189,9 @@ class Miner(object):
         logger.info("All 'Miner' background tasks started.")
 
         self.jobs.append(update_neighbour_job)
-        self.jobs.append(check_for_longest_chain_job)
+        self.jobs.append(backup_local_chain_job)
         self.jobs.append(fetch_unprocessed_data_job)
+        self.jobs.append(check_for_longest_chain_job)
         self.jobs.append(communicate_job)
 
         logger.debug("Start mining ...")
@@ -200,7 +217,7 @@ class Miner(object):
         logger.debug(f"'Server Process' Stopped.")
 
         logger.debug(f"Saving local chain ...")
-        self.blockchain._save_chain()
+        self.blockchain.save_chain()
         logger.debug(f"Chain saved.")
 
         logger.info("Shutting down routine done.")
@@ -349,6 +366,72 @@ class Miner(object):
         logger.info(f"New message added. - message: '{data.message}', id: '{data.id}'")
 
 
+    def backup_local_chain(self) -> None:
+        """
+        Periodical thread to backup the local chain to disc.
+        """
+
+        logger.debug(f"Backup local chain ... - json_format: {self.blockchain.json_format}")
+        hash_file_path = f"{os.path.splitext(self.blockchain.path_to_chain)[0]}.hash"
+
+
+        def _do_backup(hash_file_path: str, encoded_chain_hash: str):
+            """
+            Helper function that does the actual backup steps.
+
+            Args:
+                hash_file_path (str): String that describes the path to the hash file.
+                encoded_chain_hash (str): Hash value of the actual local chain.
+            """
+
+            if not os.path.isfile(hash_file_path):
+
+                # if no hash file exists -> create one with actual hash value
+                with open(hash_file_path, "w") as hash_file:
+
+                    logger.debug(f"No existing hash file. Write actual hash value.")
+                    hash_file.write(encoded_chain_hash)
+
+                    logger.info(f"Backed up chain -> Missing hash file (fixed)")
+
+            else:
+
+                # All as expected: check hash and backup if necessary
+                with(open(hash_file_path, "r")) as chain_hash_file:
+                    saved_chain_hash = chain_hash_file.read()
+
+                if saved_chain_hash != encoded_chain_hash:
+
+                    logger.debug(f"Hash of chain on disc differ from local chain hash.")
+                    logger.debug(f"Backup Chain.")
+                    self.blockchain.save_chain()
+
+                    logger.debug(f"Save new hash file.")
+                    with(open(hash_file_path, "w")) as chain_hash_file:
+                        chain_hash_file.write(encoded_chain_hash)
+
+                    logger.info(f"Backed up chain -> Chain saved.")
+
+                else:
+                    logger.info(f"Backed up chain -> No backup needed.")
+
+
+        if self.blockchain.json_format:
+
+            logger.debug(f"Encode to JSON")
+            encoded_chain = jsonpickle.encode(self.blockchain.chain)
+            encoded_chain_hash = hashlib.sha256(encoded_chain.encode()).hexdigest()
+
+            _do_backup(hash_file_path, encoded_chain_hash)
+
+        else:
+            logger.debug(f"Encode with pickle")
+            encoded_chain = pickle.dumps(self.blockchain.chain)
+            encoded_chain_hash = hashlib.sha256(encoded_chain).hexdigest()
+
+            _do_backup(hash_file_path, encoded_chain_hash)
+
+
     def fetch_unprocessed_data(self) -> None:
         """
             Periodical thread to get unprocessed data form neighbours.
@@ -425,6 +508,8 @@ class Miner(object):
 
             logger.debug(f"Maximum amount of neighbours not exceeded. -> update ...")
 
+            self_encoded = encode_IP_port_properly(self.host, self.port)
+
             # ask all neighbours for their neighbours.
             for neighbour in self.neighbours:
 
@@ -434,13 +519,17 @@ class Miner(object):
                 if response.status_code == HTTP_OK:
 
                     logger.debug(f"Get neighbours of neighbour: '{neighbour}'")
-                    new_neighbours = jsonpickle.decode(response.json())
+                    new_neighbours = jsonpickle.decode(response.json()["neighbours"])
 
                     # Add unknown miner to 'neighbours', return when max amount of neighbours is reached
                     for new_neighbour in new_neighbours:
 
-                        logger.debug(f"Add unknown neighbour '{neighbour}' to neighbours.")
-                        self.neighbours.add(new_neighbour)
+                        neighbour_encoded = encode_IP_port_properly(*new_neighbour)
+
+                        # Do not add own address
+                        if self_encoded != neighbour_encoded:
+                            logger.debug(f"Add unknown neighbour '{neighbour}' to neighbours.")
+                            self.neighbours.add(neighbour_encoded)
 
                         if len(self.neighbours) >= MAX_NEIGHBOURS:
 
