@@ -32,9 +32,11 @@ SEND_DATA_KEY = "data"
 
 MESSAGE_PARAM = "message"
 
-GOSSIP_TIME_SECONDS = 3
-CHAIN_SYNC_TIME_SECONDS = 4
-BACKUP_LOCAL_CHAIN_TIME_SECONDS = 5
-UNPROCESSED_DATA_SYNC_TIME_SECONDS = 6
+GOSSIP_TIME_SECONDS = 10
+CHAIN_SYNC_TIME_SECONDS = 5
+BACKUP_LOCAL_CHAIN_TIME_SECONDS = 30
+UNPROCESSED_DATA_SYNC_TIME_SECONDS = 2
 
-LOGGING_FORMAT = "[%(asctime)s - %(filename)-15s:%(lineno)-4s - %(levelname)-7s - %(funcName)-25s]: %(message)s"
+MINER_LOG_SIZE = 1 * 1024 * 1024 # 2 MB
+MINER_LOG_FILE = "miner.log"
+LOGGING_FORMAT = "[%(asctime)s - %(filename)-17s:%(lineno)-4s - %(levelname)-7s - %(funcName)-25s]: %(message)s"

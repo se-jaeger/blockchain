@@ -1,3 +1,6 @@
+import sys
+from logging.handlers import RotatingFileHandler
+
 import click
 import signal
 import logging
@@ -13,28 +16,30 @@ logger = logging.getLogger()
 
 
 @click.group()
-@click.option('--debug', default=False, is_flag=True)
-def cli(debug):
+def cli():
     """
     Entrypoint of CLI implementation.
     """
-
-    # TODO reasonable Config for logging
-
-    if debug:
-        logging.basicConfig(level=logging.DEBUG, format=LOGGING_FORMAT)
-    else:
-        logging.basicConfig(level=logging.INFO, format=LOGGING_FORMAT)
-
-
-
 
 @cli.group()
 def miner():
     """
     Gives the opportunity to use the miner implementation.
     """
-    pass
+
+    logger.setLevel(logging.DEBUG)
+    formatter = logging.Formatter(LOGGING_FORMAT)
+
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    console_handler.setFormatter(formatter)
+
+    rotating_file_handler = RotatingFileHandler(MINER_LOG_FILE, maxBytes=MINER_LOG_SIZE, backupCount=3)
+    rotating_file_handler.setLevel(logging.DEBUG)
+    rotating_file_handler.setFormatter(formatter)
+
+    logger.addHandler(rotating_file_handler)
+    logger.addHandler(console_handler)
 
 
 @cli.group()
@@ -67,6 +72,8 @@ def start(chain_path: str, json: bool, host: str, port: int, difficulty: int, ne
         logger.error(f"Caught 'ProgramKilledError' -> Shutting down miner.")
 
         miner.stop_mining()
+
+        logger.debug("==================== FINISHED ====================\n\n\n")
 
 
 @cli.command()

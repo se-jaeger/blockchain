@@ -52,6 +52,7 @@ Miner Implementation
 - ``<filename>.chain``: Representation of the actual file.
 - ``<filename>.hash``: ``SHA-156`` of the actual chain file. Is used to check if the local chain differs from its on disc representation.
 - ``<filename>_<date>_<time>``: Older versions of the chain file. Created at ``<date>_<time>``.
+- ``miner.log``: Log file and up to three backup files named ``miner.log.x`` where ``x`` is a number.
 
 |
 
