@@ -9,12 +9,12 @@ GENESIS_BLOCK = Block(index=0, data=GENESIS_DATA, proof=None, previous_hash=None
 GENESIS_BLOCK_HASH = hashlib.sha256(bytes(GENESIS_BLOCK)).hexdigest()
 
 MAX_NEIGHBOURS = 3
-DEFAULT_NEIGHBOURS = {"localhost:12345"}
 
-DIFFICULTY_DEFAULT = 5
-
-HOST_DEFAULT = "0.0.0.0"
-PORT_DEFAULT = 12345
+DEFAULT_JSON = True
+DEFAULT_PORT = 12345
+DEFAULT_DIFFICULTY = 5
+DEFAULT_NEIGHBOURS = []
+DEFAULT_HOST = "0.0.0.0"
 
 HTTP_OK = 200
 HTTP_BAD = 400
@@ -32,8 +32,20 @@ SEND_DATA_KEY = "data"
 
 MESSAGE_PARAM = "message"
 
-GOSSIP_TIME_SECONDS = 5
+GOSSIP_TIME_SECONDS = 10
 CHAIN_SYNC_TIME_SECONDS = 5
-UNPROCESS_DATA_SYNC_TIME_SECONDS = 5
+BACKUP_LOCAL_CHAIN_TIME_SECONDS = 30
+UNPROCESSED_DATA_SYNC_TIME_SECONDS = 2
 
-LOGGING_FORMAT = "[%(asctime)s - %(filename)-15s:%(lineno)-4s - %(levelname)-7s - %(funcName)-25s]: %(message)s"
+MINER_LOG_SIZE = 1 * 1024 * 1024 # 2 MB
+MINER_LOG_FILE = "miner.log"
+LOGGING_FORMAT = "[%(asctime)s - %(filename)-17s:%(lineno)-4s - %(levelname)-7s - %(funcName)-25s]: %(message)s"
+
+
+############## CLI Help messages ##############
+
+PORT_HELP                   = "Port of miner."
+HOST_HELP                   = "IPv4 Address of miner."
+CHAIN_SERIALIZATION_HELP    = "Defines the serialization format of chain file. One of these: ['json', 'pickle']"
+DIFFICULTY_HELP             = "Difficulty of the chain"
+NEIGHBOURS_HELP             = "Comma separated 'host:port' list, e.g.: localhost:23456,localhost:34567"

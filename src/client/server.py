@@ -88,4 +88,4 @@ def start_server(queue: Queue):
 
 
     logger.debug(f"Server created and initialized.")
-    app.run(HOST_DEFAULT, PORT_DEFAULT)
+    app.run(DEFAULT_HOST, DEFAULT_PORT)
