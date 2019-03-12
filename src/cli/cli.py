@@ -47,11 +47,11 @@ def get():
 
 @miner.command()
 @click.argument("chain_path")
-@click.option("--json", default=DEFAULT_JSON, type=bool)
-@click.option("--neighbours", default=DEFAULT_NEIGHBOURS, type=list)
 @click.option("--port", default=DEFAULT_PORT, type=int)
 @click.option("--host", default=DEFAULT_HOST, type=str)
+@click.option("--json", default=DEFAULT_JSON, type=bool)
 @click.option("--difficulty", default=DEFAULT_DIFFICULTY, type=int)
+@click.option("--neighbours", default=DEFAULT_NEIGHBOURS, type=list)
 def start(chain_path: str, json: bool, host: str, port: int, difficulty: int, neighbours: list):
 
     miner = Miner(path_to_chain=chain_path, json_format=json, host=host, port=port, difficulty=difficulty, neighbours=neighbours)
@@ -93,7 +93,8 @@ def add(message, host, port):
 @get.command()
 @click.option("--port", default=DEFAULT_PORT, type=int)
 @click.option("--host", default=DEFAULT_HOST, type=str)
-def chain(host, port):
+@click.option("--json", default=DEFAULT_JSON, type=bool)
+def chain(host, port, json):
     """
     Get the actual chain.
     """
@@ -102,10 +103,15 @@ def chain(host, port):
 
     if response.status_code == HTTP_OK:
 
-        json = response.json()
+        if json:
+            json = response.json()
+        else:
+            json = jsonpickle.decode(response.json())
+
+        length = json['length']
         chain = jsonpickle.decode(json["chain"])
 
-        click.echo(click.style(f"\nChain with length: {json['length']}\n", fg="green"))
+        click.echo(click.style(f"\nChain with length: {length}\n", fg="green"))
         click.echo(chain)
 
     else:
@@ -115,7 +121,8 @@ def chain(host, port):
 @get.command()
 @click.option("--port", default=DEFAULT_PORT, type=int)
 @click.option("--host", default=DEFAULT_HOST, type=str)
-def neighbours(host, port):
+@click.option("--json", default=DEFAULT_JSON, type=bool)
+def neighbours(host, port, json):
     """
     Get the actual neighbours
     """
@@ -124,10 +131,16 @@ def neighbours(host, port):
 
     if response.status_code == HTTP_OK:
 
-        json = response.json()
+        if json:
+            json = response.json()
+        else:
+            json = jsonpickle.decode(response.json())
 
-        click.echo(click.style(f"\nActual are {json['length']} neighbours available.\n", fg="green"))
-        click.echo(json["neighbours"])
+        length = json['length']
+        neighbours = jsonpickle.decode(json["neighbours"])
+
+        click.echo(click.style(f"\nActual are {length} neighbours available.\n", fg="green"))
+        click.echo(neighbours)
 
     else:
         click.echo(click.style("Something went wrong!", fg="red"))
