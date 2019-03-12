@@ -166,6 +166,9 @@ def test_is_chain_valid__wrong_genesis(json_format, clean_chain_file_fixture):
     miner.blockchain.chain[0]._index = 0
     assert not miner.is_chain_valid()
 
+    # cleanup ..
+    miner.blockchain.chain[0]._previous_hash = None
+
 
 @pytest.mark.parametrize("json_format", constructor_json_format)
 def test_is_chain_valid__wrong_block_1(json_format, clean_chain_file_fixture):

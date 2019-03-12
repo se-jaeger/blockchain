@@ -38,7 +38,7 @@ class Blockchain(object):
         if os.path.isfile(self.path_to_chain):
 
             logger.debug(f"Load existing chain from disc ...")
-            self._load_chain()
+            self.load_chain()
             logger.debug(f"Existing chain loaded.")
 
         else:
@@ -46,18 +46,13 @@ class Blockchain(object):
 
             # if no local chain exists, create the genesis block
             self.chain = [GENESIS_BLOCK]
-
-            # make sure that chain is saved to disc
-            self._save_chain()
-            self._load_chain()
-
             logger.debug(f"New chain created.")
 
         logger.info("Created 'Blockchain' object.")
         logger.debug(f"'Blockchain' object created.")
 
 
-    def _load_chain(self) -> None:
+    def load_chain(self) -> None:
         """
 
         Helper method to load chain from disk. Raises an error if no chain is found.
@@ -92,17 +87,17 @@ class Blockchain(object):
                 chain = pickle.load(chain_file)
 
         logger.debug(f"Chain loaded.")
-        self.chain = chain
+        self._chain = chain
 
 
-    def _save_chain(self) -> None:
+    def save_chain(self) -> None:
         """
 
         Helper method to save chain to disk. Creates intermediate directories and backups an existing chain file if necessary.
 
         """
 
-        logger.debug(f"Saving chain from disc ...")
+        logger.debug(f"Saving chain to disc ...")
 
         path_to_chain = encode_file_path_properly(self.path_to_chain)
 
@@ -120,17 +115,43 @@ class Blockchain(object):
             logger.debug(f"Create intermediate directories.")
             os.makedirs(os.path.dirname(path_to_chain))
 
+        hash_file_path = f"{os.path.splitext(path_to_chain)[0]}.hash"
+
         # depending on serialization format serialize chain to disc
         if self.json_format:
+
+            logger.debug(f"Encode as JSON - json_format: {self.json_format}")
+            encoded_chain = jsonpickle.encode(self.chain)
+
+            logger.debug(f"Hashing encoded_chain.")
+            encoded_chain_hash = hashlib.sha256(encoded_chain.encode()).hexdigest()
+
             with open(path_to_chain, "w") as chain_file:
 
-                logger.debug(f"Encode as JSON - json_format: {self.json_format}")
-                chain_file.write(jsonpickle.encode(self.chain))
+                logger.debug("Write chain file to disc.")
+                chain_file.write(encoded_chain)
+
+            with open(hash_file_path, "w") as chain_hash_file:
+
+                logger.debug("Write chain hash file to disc.")
+                chain_hash_file.write(encoded_chain_hash)
         else:
+
+            logger.debug(f"Encode with pickle - json_format: {self.json_format}")
+            encoded_chain = pickle.dumps(self.chain)
+
+            logger.debug(f"Hashing encoded_chain.")
+            encoded_chain_hash = hashlib.sha256(encoded_chain).hexdigest()
+
             with open(path_to_chain, "wb") as chain_file:
 
-                logger.debug(f"Encode with pickle - json_format: {self.json_format}")
-                pickle.dump(self.chain, chain_file)
+                logger.debug("Write chain file to disc.")
+                chain_file.write(encoded_chain)
+
+            with open(hash_file_path, "w") as chain_hash_file:
+
+                logger.debug("Write chain hash file to disc.")
+                chain_hash_file.write(encoded_chain_hash)
 
         logger.debug(f"Chain saved.")
 
@@ -150,9 +171,6 @@ class Blockchain(object):
 
         block = Block(index=len(self.chain), data=data, proof=proof, previous_hash=previous_hash)
         self.chain.append(block)
-
-        #TODO: good idea? -> hack to save actual chain..
-        self._save_chain()
 
         logger.debug(f"New block added. - block.index: '{block.index}', block.proof: '{block.proof}', block.previous_hash: '{block.previous_hash}', block.timestamp: '{block.timestamp}', block.data.id: '{block.data.id}', block.data.message: '{block.data.message}'")
 
@@ -182,3 +200,4 @@ class Blockchain(object):
     @chain.setter
     def chain(self, chain: list) -> None:
         self._chain = chain
+        self.save_chain()
