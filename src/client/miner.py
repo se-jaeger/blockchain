@@ -267,7 +267,7 @@ class Miner(object):
         """
         Simple proof of work:
 
-            Find a number ``p`` that when hashed with the previous `block``’s solution a hash with ``difficulty`` trailing 0s is produced.
+            Find a number ``p`` that when hashed with the previous ``block``’s solution a hash with ``difficulty`` trailing 0s is produced.
 
         Args:
             last_proof (int): Solution of the last blocks' proof of work
