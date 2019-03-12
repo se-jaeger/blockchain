@@ -15,7 +15,7 @@ from src.blockchain.block import Block
 from src.client.server import start_server
 from src.utils.errors import ChainNotValidError
 from src.blockchain.blockchain import Blockchain
-from src.utils.utils import encode_IP_port_properly, create_proper_url_string, Job
+from src.utils.utils import encode_IP_port_properly, create_proper_url_string, Job, encode_file_path_properly
 
 
 logger = logging.getLogger(__name__)
@@ -108,7 +108,7 @@ class Miner(object):
         self._server_process = None
         self._difficulty = difficulty
         self._not_processed_messages = set()
-        self._blockchain = Blockchain(path_to_chain=path_to_chain, json_format=json_format)
+        self._blockchain = Blockchain(path_to_chain=encode_file_path_properly(path_to_chain), json_format=json_format)
 
         logger.debug(f"Check chain ...")
 

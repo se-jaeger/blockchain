@@ -64,22 +64,20 @@ class Blockchain(object):
 
         logger.debug(f"Loading chain from disc ...")
 
-        path_to_chain = encode_file_path_properly(self.path_to_chain)
-
         # handle no existing chain
-        if not os.path.isfile(path_to_chain):
+        if not os.path.isfile(self.path_to_chain):
             raise ChainNotFoundError("No Blockchain file (.chain) could be found!")
 
         # deserialize chain from disc depending on serialization format
         if self.json_format:
-            with open(path_to_chain, mode="r") as chain_file:
+            with open(self.path_to_chain, mode="r") as chain_file:
 
                 logger.debug(f"Decode as JSON - json_format: {self.json_format}")
 
                 # TODO: handle errors: corrupt data, ...
                 chain = jsonpickle.decode(chain_file.read())
         else:
-            with open(path_to_chain, mode="rb") as chain_file:
+            with open(self.path_to_chain, mode="rb") as chain_file:
 
                 logger.debug(f"Decode with pickle - json_format: {self.json_format}")
 
@@ -99,23 +97,21 @@ class Blockchain(object):
 
         logger.debug(f"Saving chain to disc ...")
 
-        path_to_chain = encode_file_path_properly(self.path_to_chain)
-
         # if chain exists, first rename the old one
-        if os.path.isfile(path_to_chain):
+        if os.path.isfile(self.path_to_chain):
 
             logger.debug(f"Rename existing chain file.")
 
-            filename, file_extension = os.path.splitext(path_to_chain)
-            os.rename(path_to_chain, filename + "_" + time.strftime("%d-%m-%Y_%H:%M:%S", time.localtime()) + file_extension)
+            filename, file_extension = os.path.splitext(self.path_to_chain)
+            os.rename(self.path_to_chain, filename + "_" + time.strftime("%d-%m-%Y_%H:%M:%S", time.localtime()) + file_extension)
 
         # create intermediate directories if necessary
-        elif not os.path.isdir(os.path.dirname(path_to_chain)):
+        elif not os.path.isdir(os.path.dirname(self.path_to_chain)):
 
             logger.debug(f"Create intermediate directories.")
-            os.makedirs(os.path.dirname(path_to_chain))
+            os.makedirs(os.path.dirname(self.path_to_chain))
 
-        hash_file_path = f"{os.path.splitext(path_to_chain)[0]}.hash"
+        hash_file_path = f"{os.path.splitext(self.path_to_chain)[0]}.hash"
 
         # depending on serialization format serialize chain to disc
         if self.json_format:
@@ -126,7 +122,7 @@ class Blockchain(object):
             logger.debug(f"Hashing encoded_chain.")
             encoded_chain_hash = hashlib.sha256(encoded_chain.encode()).hexdigest()
 
-            with open(path_to_chain, "w") as chain_file:
+            with open(self.path_to_chain, "w") as chain_file:
 
                 logger.debug("Write chain file to disc.")
                 chain_file.write(encoded_chain)
@@ -143,7 +139,7 @@ class Blockchain(object):
             logger.debug(f"Hashing encoded_chain.")
             encoded_chain_hash = hashlib.sha256(encoded_chain).hexdigest()
 
-            with open(path_to_chain, "wb") as chain_file:
+            with open(self.path_to_chain, "wb") as chain_file:
 
                 logger.debug("Write chain file to disc.")
                 chain_file.write(encoded_chain)
