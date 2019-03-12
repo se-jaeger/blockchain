@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 class Miner(object):
 
-    def __init__(self, path_to_chain: str, json_format: bool, host: str, port: int, difficulty: int, neighbours: list = []) -> None:
+    def __init__(self, path_to_chain: str, json_format: bool, port: int, difficulty: int, neighbours: list = []) -> None:
         """
 
         Constructor for new ``Miner`` object.
@@ -31,14 +31,13 @@ class Miner(object):
         Args:
             path_to_chain (str): Path to chain for restore/ backup purposes.
             json_format (bool): Use JSON format for chain? Otherwise pickle is used.
-            host (str): IPv4-Address or ``localhost`` of neighbour.
             port (int): Port of neighbour.
             difficulty (int): Amount of trailing 0s for proof of work
             neighbours (list): List of tuples (IP-Address, port) of known neighbours.
         """
 
         logger.info("Create 'Miner' object ...")
-        logger.debug(f"Arguments - path_to_chain: {path_to_chain}, json_format: {json_format}, host: {host}, port: {port}, difficulty: {difficulty}, neighbours: {neighbours}")
+        logger.debug(f"Arguments - path_to_chain: {path_to_chain}, json_format: {json_format}, port: {port}, difficulty: {difficulty}, neighbours: {neighbours}")
 
         logger.debug("Init parent Class.")
         super().__init__()
@@ -52,17 +51,6 @@ class Miner(object):
 
         if not isinstance(json_format, bool):
             raise ValueError("'json_format' has to be a boolean value!")
-
-
-        logger.debug(f"Type checks: 'host' ...")
-
-        if not isinstance(host, str):
-            raise ValueError("'host' has to be of type string!")
-
-        try:
-            encode_IP_port_properly(host, 12345)
-        except:
-            raise ValueError("'host' is not a valid host string ...")
 
 
         logger.debug(f"Type checks: 'port' ...")
@@ -101,7 +89,6 @@ class Miner(object):
         logger.debug(f"Type checks done: all valid.")
 
         self._jobs = []
-        self._host = host
         self._port = port
         self._queue = None
         self._neighbours = set()
@@ -122,7 +109,7 @@ class Miner(object):
         logger.debug(f"Check chain: valid.")
         logger.debug(f"Create neighbours: ...")
 
-        self_encoded = encode_IP_port_properly(self.host, self.port)
+        self_encoded = encode_IP_port_properly("localhost", self.port)
 
         for neighbour in neighbours:
 
@@ -508,7 +495,7 @@ class Miner(object):
 
             logger.debug(f"Maximum amount of neighbours not exceeded. -> update ...")
 
-            self_encoded = encode_IP_port_properly(self.host, self.port)
+            self_encoded = encode_IP_port_properly("localhost", self.port)
 
             # ask all neighbours for their neighbours.
             for neighbour in self.neighbours:
@@ -712,11 +699,6 @@ class Miner(object):
     @property
     def neighbours(self) -> set:
         return self._neighbours
-
-
-    @property
-    def host(self) -> str:
-        return self._host
 
 
     @property
