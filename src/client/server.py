@@ -14,6 +14,9 @@ def start_server(queue: Queue, port: int):
     logger.debug(f"Create and init server ...")
 
     app = Flask(__name__)
+    log = logging.getLogger('werkzeug')
+    log.disabled = True
+    app.logger.disabled = True
 
 
     @app.route(ADD_ENDPOINT, methods=["PUT"])
