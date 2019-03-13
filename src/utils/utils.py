@@ -1,10 +1,15 @@
 import os
+import logging
 import threading
 
 from datetime import timedelta
-from ipaddress import ip_address, IPv4Address
+from urllib.parse import urlparse
 
+from src.utils.constants import DEFAULT_PORT
 from src.utils.errors import ProgramKilledError, PortValueError
+
+
+logger = logging.getLogger(__name__)
 
 
 def encode_file_path_properly(file_path: str) -> str:
@@ -16,7 +21,7 @@ def encode_file_path_properly(file_path: str) -> str:
         file_path (str): Path to encode properly
 
     Returns:
-        str: Absolut and properly encoded ``file_path``
+        str: Absolute and properly encoded ``file_path``
 
     """
 
@@ -29,38 +34,69 @@ def encode_file_path_properly(file_path: str) -> str:
     return file_path
 
 
-def encode_IP_port_properly(ip: str, port: int) -> (IPv4Address, int):
+def split_url_string(host_port: str) -> (str, int):
     """
 
-    Validates given IP Address and port.
+    Parses the given URL string and returns the IP address/hostname and the port/default port.
 
     Args:
-        ip: IP address or ``localhost`` to check for correctness.
-        port: Port to validate.
+        host_port (str): Representation of the miner as URL string, e.g.: ``127.0.0.1:12345``, ``miner1:8888``, ``miner``, ``http://localhost``, ...
 
     Returns:
-        (IPv4Address, int):
+        (str, int): Tuple of IPv4 Address or hostname string and port number.
 
     Raises:
         PortValueError: Will be raised if given ``port`` is out of range.
         AddressValueError: Will be raised if given ``address`` is not a valid IPv4 address or "localhost".
     """
 
-    if ip == "localhost" or ip == "0.0.0.0":
-        ip = "127.0.0.1"
+    logger.debug(f"Split URL string ... - '{host_port}'")
+
+    # remove leading protocols (http/ https)
+    if host_port.startswith("http://"):
+        host_port = host_port[len("http://"):]
+
+    elif host_port.startswith("https://"):
+        host_port = host_port[len("https://")]
+
+    else:
+        logger.debug(f"No leading protocol found: '{host_port}'")
+
+
+    cleaned_url_string = urlparse(f"http://{host_port}").netloc
+    url_split = cleaned_url_string.split(":")
+
+    if(len(url_split) == 1):
+        host = url_split[0]
+        port = DEFAULT_PORT
+
+    elif(len(url_split) == 2):
+        host = url_split[0]
+        port = int(url_split[1])
+
+    else:
+        logger.warning(f"Split URL string is to long, use index 0 and 1: - '{url_split}'")
+        host = url_split[0]
+        port = int(url_split[1])
 
     if port < 1 or port > 65535:
         raise PortValueError("Given port is out of range (1 - 65535).")
 
-    return (ip_address(ip), port)
+    if host == "localhost" or host == "0.0.0.0":
+        host = "127.0.0.1"
+
+    logger.debug(f"URL string split. - host: '{host}', port: '{port}")
+    return (host, port)
 
 
-def create_proper_url_string(host_port: (IPv4Address, int), path: str) -> str:
+def create_proper_url_string(host_port: (str, int), path: str) -> str:
     """
 
+    Takes the internal representation of neighbours and a endpoint path to create a proper URL string for requests.
+
     Args:
-        host_port (IPv4Address, int): Internal representation of IP address and port combination.
-        path (int): The endpoint of the API.
+        host_port (str, int): Internal representation of IP address/hostname and port combination.
+        path (str): The endpoint of the API.
 
     Returns:
         str: Correct URL string for ``address`` and ``path``.
@@ -73,24 +109,9 @@ def create_proper_url_string(host_port: (IPv4Address, int), path: str) -> str:
     return f"http://{host_port[0]}:{host_port[1]}/{path}"
 
 
-def create_URL(address: str, port: int, path: str) -> str:
-    """
-    Function for convenience to create URL strings.
-
-    Args:
-        address: IP address or ``localhost`` to check for correctness.
-        port: Port to validate.
-        str: Correct URL string for ``address`` and ``path``.
-
-    Returns:
-        path (int): The endpoint of the API.
-    """
-
-    return create_proper_url_string(encode_IP_port_properly(address, port), path)
-
-
 def signal_handler(signum, frame):
     """
+
     Signal handler used to raise special ``ProgramKilledError``.
 
     Raises:
@@ -105,6 +126,7 @@ class Job(threading.Thread):
 
     def __init__(self, interval: timedelta, execute, *args, **kwargs) -> None:
         """
+
         Class that represents asynchronous background ``Job``. Runs each ``interval``.
 
         Args:

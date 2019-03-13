@@ -70,22 +70,12 @@ def start(chain_path: str, chain_serialization: str, port: int, difficulty: int,
         logger.error(f"--chain_serialization should one of these: 'json' or 'pickle'")
         raise ValueError(f"--chain_serialization should one of these: 'json' or 'pickle'")
 
-    # compile input (localhost:23456,localhost:34567)
-    # into proper form (list of tuples): [("localhost", 23456), ("localhost", 34567)]
-    neighbours_correct = []
-
+    # parse list of neighbours to python list
     if neighbours:
-        neighbours_list = neighbours.split(",")
-
-        for neighbour_string in neighbours_list:
-
-            host_port_list = neighbour_string.split(":")
-            neighbour_tuple = (host_port_list[0], int(host_port_list[1]))
-
-            neighbours_correct.append(neighbour_tuple)
+        neighbours = neighbours.split(",")
 
 
-    miner = Miner(path_to_chain=chain_path, json_format=json_format, port=port, difficulty=difficulty, neighbours=neighbours_correct)
+    miner = Miner(path_to_chain=chain_path, json_format=json_format, port=port, difficulty=difficulty, neighbours=neighbours)
 
     try:
         signal.signal(signal.SIGTERM, signal_handler)
@@ -111,7 +101,7 @@ def add(message, host, port):
     Send a message to miner at 'host':'port'.
     """
 
-    response = requests.put(create_URL(host, port, ADD_ENDPOINT), params={MESSAGE_PARAM: message})
+    response = requests.put(create_proper_url_string((host, port), ADD_ENDPOINT), params={MESSAGE_PARAM: message})
 
     if response.status_code == HTTP_OK:
 
@@ -131,7 +121,7 @@ def chain(host, port):
     Get the actual chain from miner at 'host':'port'.
     """
 
-    response = requests.get(create_URL(host, port, CHAIN_ENDPOINT))
+    response = requests.get(create_proper_url_string((host, port), CHAIN_ENDPOINT))
 
     if response.status_code == HTTP_OK:
 
@@ -154,7 +144,7 @@ def neighbours(host, port):
     Get the actual neighbours from miner at 'host':'port'.
     """
 
-    response = requests.get(create_URL(host, port, SEND_NEIGHBOURS_KEY))
+    response = requests.get(create_proper_url_string((host, port), SEND_NEIGHBOURS_KEY))
 
     if response.status_code == HTTP_OK:
 

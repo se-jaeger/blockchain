@@ -1,8 +1,7 @@
 import os
+import pickle
 import hashlib
 import logging
-import pickle
-
 import requests
 import jsonpickle
 
@@ -15,7 +14,7 @@ from src.blockchain.block import Block
 from src.client.server import start_server
 from src.utils.errors import ChainNotValidError
 from src.blockchain.blockchain import Blockchain
-from src.utils.utils import encode_IP_port_properly, create_proper_url_string, Job, encode_file_path_properly
+from src.utils.utils import split_url_string, create_proper_url_string, Job, encode_file_path_properly
 
 
 logger = logging.getLogger(__name__)
@@ -33,7 +32,7 @@ class Miner(object):
             json_format (bool): Use JSON format for chain? Otherwise pickle is used.
             port (int): Port of neighbour.
             difficulty (int): Amount of trailing 0s for proof of work
-            neighbours (list): List of tuples (IP-Address, port) of known neighbours.
+            neighbours (list): List of known neighbours, e.g. ``["localhost:23456", "miner0815:6666"]``
         """
 
         logger.info("Create 'Miner' object ...")
@@ -71,20 +70,15 @@ class Miner(object):
 
         for index, neighbour in enumerate(neighbours):
 
-            if not isinstance(neighbour, tuple):
-                raise ValueError("Elements of 'neighbours' has to be of type tuple!")
-
-            if not isinstance(neighbour[0], str):
-                raise ValueError(f"'host' of element at index: {index} of 'neighbours' has to be of type string!")
+            if not isinstance(neighbour, str):
+                raise ValueError("Elements of 'neighbours' has to be of type string!")
 
             try:
-                encode_IP_port_properly(neighbour[0], 12345)
+                split_url_string(neighbour)
 
             except:
-                raise ValueError(f"'host' of element at index: {index} of 'neighbours' is not a valid host string!")
+                raise ValueError(f"Neighbour at index: {index} of 'neighbours' is not a valid 'ip:port' representation. (Maybe Port out of range or protocol is not in [http, https]?")
 
-            if not isinstance(neighbour[1], int) or neighbour[1] < 1 or neighbour[1] > 65535:
-                raise ValueError(f"'port' of element at index: {index} of 'neighbours' is of wrong type or out of range!")
 
         logger.debug(f"Type checks done: all valid.")
 
@@ -108,17 +102,12 @@ class Miner(object):
         logger.debug(f"Check chain: valid.")
         logger.debug(f"Create neighbours: ...")
 
-        self_encoded = encode_IP_port_properly("localhost", self.port)
-
         for neighbour in neighbours:
 
             if len(self.neighbours) < MAX_NEIGHBOURS:
 
-                neighbour_encoded = encode_IP_port_properly(*neighbour)
-
-                # Do not add own address
-                if self_encoded != neighbour_encoded:
-                    self.neighbours.add(neighbour_encoded)
+                neighbour_internal = split_url_string(neighbour)
+                self.neighbours.add(neighbour_internal)
 
         logger.info("Created 'Miner' object.")
         logger.debug(f"'Miner' object created.")
@@ -228,7 +217,7 @@ class Miner(object):
 
                 logger.debug(f"Found handle for message with key: '{SEND_CHAIN_KEY}'")
                 message[1].send({
-                    "chain": jsonpickle.encode(self.blockchain.chain),
+                    "chain": jsonpickle.encode(self.blockchain.chain.copy()),
                     "length": len(self.blockchain.chain),
                 })
 
@@ -236,14 +225,14 @@ class Miner(object):
 
                 logger.debug(f"Found handle for message with key: '{SEND_NEIGHBOURS_KEY}'")
                 message[1].send({
-                    "neighbours": jsonpickle.encode(self.neighbours),
+                    "neighbours": jsonpickle.encode(self.neighbours.copy()),
                     "length": len(self.neighbours),
                 })
 
             elif SEND_DATA_KEY == message[0]:
 
                 logger.debug(f"Found handle for message with key: '{SEND_DATA_KEY}'")
-                message[1].send(jsonpickle.encode(self.unprocessed_data))
+                message[1].send(jsonpickle.encode(self.unprocessed_data.copy()))
 
             else:
                 logger.warning(f"Could not find handle for message: '{message[0]}'")
@@ -282,9 +271,8 @@ class Miner(object):
         return proof
 
 
-    def is_chain_valid(self) -> bool:
+    def is_chain_valid(self, chain: list = None) -> bool:
         """
-
         Checks if the given ``chain`` satisfies the following rules:
             1. The first (genesis) block:
                 - ``index`` = 0
@@ -297,6 +285,9 @@ class Miner(object):
                 - ``proof``: has to be valid -> see: :meth:`~Miner.is_proof_of_work_valid`
                 - ``timestamp``: higher than the timestamp of of preceding block
 
+        Args:
+            chain (list): Optional chain if ``None`` internal representation is used.
+
         Returns:
             bool: ``True`` if ``chain`` is valid, ``False`` otherwise.
         """
@@ -305,7 +296,13 @@ class Miner(object):
 
         previous_block = None
 
-        for index, block in enumerate(self.blockchain.chain):
+        if chain == None:
+            chain_to_check = self.blockchain.chain
+
+        else:
+            chain_to_check = chain
+
+        for index, block in enumerate(chain_to_check):
 
             # rules for genesis block
             if index == 0:
@@ -494,8 +491,6 @@ class Miner(object):
 
             logger.debug(f"Maximum amount of neighbours not exceeded. -> update ...")
 
-            self_encoded = encode_IP_port_properly("localhost", self.port)
-
             # ask all neighbours for their neighbours.
             for neighbour in self.neighbours.copy():
 
@@ -507,15 +502,13 @@ class Miner(object):
                     logger.debug(f"Get neighbours of neighbour: '{neighbour}'")
                     new_neighbours = jsonpickle.decode(response.json()["neighbours"])
 
+                    # TODO check response like in constructor...
+
                     # Add unknown miner to 'neighbours', return when max amount of neighbours is reached
                     for new_neighbour in new_neighbours:
 
-                        neighbour_encoded = encode_IP_port_properly(*new_neighbour)
-
                         # Do not add own address
-                        if self_encoded != neighbour_encoded:
-                            logger.debug(f"Add unknown neighbour '{neighbour}' to neighbours.")
-                            self.neighbours.add(neighbour_encoded)
+                        self.neighbours.add(new_neighbour)
 
                         if len(self.neighbours) >= MAX_NEIGHBOURS:
 
@@ -558,24 +551,24 @@ class Miner(object):
             if response.status_code == HTTP_OK:
 
                 logger.debug(f"Get chain of neighbour: '{neighbour}'")
-                length = response.json()['length']
                 chain = jsonpickle.decode(response.json()['chain'])
+                length = len(chain)
 
                 # chain longer and valid?
-                if length > max_length and self.is_chain_valid():
+                if length > max_length and self.is_chain_valid(chain):
 
-                    logger.debug(f"New chain is longer. - neighbour: '{neighbour}', length of old chain: '{max_length}'', length of chain: '{length}'")
+                    logger.debug(f"New chain is longer. - neighbour: '{neighbour}', length of old chain: '{max_length}', length of chain: '{length}'")
                     max_length = length
                     new_chain = chain
 
             else:
                 logger.warning(f"Response of neighbour: '{neighbour}' has bad status_code: '{response.status_code}'")
 
-            # replace local chain with longest valid chain of all neighbours network
-            if new_chain:
+        # replace local chain with longest valid chain of all neighbours network
+        if new_chain:
 
-                self.blockchain.chain = new_chain
-                logger.debug(f"Longer chain added.")
+            self.blockchain.chain = new_chain
+            logger.debug(f"Longer chain added.")
 
         if old_chain == self.blockchain.chain:
             logger.info(f"Synced chain -> Have already longest chain.")

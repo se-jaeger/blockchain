@@ -69,7 +69,9 @@ Miner Implementation
 Improvements
 ============
 
-- Miner endpoint (health) to check availability and provide opportunity to delete a neighbour.
+- Miner endpoint (health) to check availability and provide opportunity to delete a neighbour
+- More Error handling -> chain probably gets corrupt when killing miner
+- Use locking for (chain, neighbours, data)
 
 
 Contents
