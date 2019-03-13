@@ -24,7 +24,7 @@ def clean_chain_file_fixture():
 @pytest.mark.parametrize("json_format", constructor_json_format)
 def test_constructor(json_format, clean_chain_file_fixture):
 
-    miner = Miner(path_to_chain=path_to_chain, json_format=json_format, port=DEFAULT_PORT, difficulty=DEFAULT_DIFFICULTY, neighbours=[("localhost", 12345)])
+    miner = Miner(path_to_chain=path_to_chain, json_format=json_format, port=DEFAULT_PORT, difficulty=DEFAULT_DIFFICULTY, neighbours=["localhost:12345"])
 
     assert isinstance(miner, Miner)
     assert miner.blockchain.chain[0] == GENESIS_BLOCK
@@ -59,7 +59,7 @@ def test_constructor_invalid_difficulty(difficulty, clean_chain_file_fixture):
         Miner(path_to_chain=path_to_chain, json_format=True, port=DEFAULT_PORT, difficulty=difficulty, neighbours=[("localhost", 12345)])
 
 
-@pytest.mark.parametrize("neighbours", [65536, 47.11, True, {"abc", "asdf"}, ("abc", "asdf"), [("locaasdflhost", 12345)], [(2, 12345)], [(False, 12345)], [(12.23, 12345)], [("localhost", -1)], [("localhost", 65536)]])
+@pytest.mark.parametrize("neighbours", [65536, 47.11, True, {"abc", "asdf"}, ("abc", "asdf"), [("locaasdflhost", "12345")], [2], [False], [12.23], ["localhost:-1"], ["localhost:65536"]])
 def test_constructor_invalid_neighbours(neighbours, clean_chain_file_fixture):
 
     with pytest.raises(ValueError, match="'neighbours'"):
