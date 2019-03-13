@@ -103,7 +103,6 @@ class Miner(object):
         if not self.is_chain_valid():
 
             #TODO: test
-            print(self.blockchain.chain)
             raise ChainNotValidError("Local chain is not valid!")
 
         logger.debug(f"Check chain: valid.")
@@ -430,7 +429,7 @@ class Miner(object):
         old_data = self.unprocessed_data
 
         # ask all neighbours for their data queues.
-        for neighbour in self.neighbours:
+        for neighbour in self.neighbours.copy():
 
             logger.debug(f"Fetch data of neighbour: '{neighbour}'")
             response = requests.get(create_proper_url_string(neighbour, DATA_ENDPOINT))
@@ -498,7 +497,7 @@ class Miner(object):
             self_encoded = encode_IP_port_properly("localhost", self.port)
 
             # ask all neighbours for their neighbours.
-            for neighbour in self.neighbours:
+            for neighbour in self.neighbours.copy():
 
                 logger.debug(f"Fetch neighbours of neighbour: '{neighbour}'")
                 response = requests.get(create_proper_url_string(neighbour, NEIGHBOURS_ENDPOINT))
@@ -551,7 +550,7 @@ class Miner(object):
         # only longest chain is of interest
         max_length = len(self.blockchain.chain)
 
-        for neighbour in self.neighbours:
+        for neighbour in self.neighbours.copy():
 
             logger.debug(f"Fetch chain of neighbour: '{neighbour}'")
             response = requests.get(create_proper_url_string(neighbour, CHAIN_ENDPOINT))
