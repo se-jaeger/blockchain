@@ -2,6 +2,9 @@ import logging
 
 from uuid import uuid4
 
+from src.utils.utils import colorize
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -45,11 +48,12 @@ class Data(object):
 
     def __repr__(self) -> str:
 
-        data_rep = "Data object with - \n"
-        data_rep += "\t\t\t\tid:\t" + str(self.id) + "\n"
-        data_rep += "\t\t\t\tmessage:" + str(self.message)
+        data_representation =  f"| \t\t{'_' * 66}\n"
+        data_representation += f"| {colorize('data', 'bold')}:\t\t| id: \t{self.id}\n"
+        data_representation += f"| \t\t| message: {self.message}\n"
+        data_representation += f"| \t\t {'_' * 65}"
 
-        return data_rep
+        return data_representation
 
 
     def __eq__(self, other) -> bool:

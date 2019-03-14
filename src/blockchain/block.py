@@ -2,6 +2,7 @@ import logging
 
 from time import time
 
+from src.utils.utils import colorize
 from src.blockchain.data import Data
 
 
@@ -104,14 +105,15 @@ class Block(object):
 
         """
 
-        block_rep = "Block object with - \n"
-        block_rep += "\tindex:\t\t" + str(self.index) + "\n"
-        block_rep += "\tdata:\t\t" + str(self.data) + "\n"
-        block_rep += "\ttime:\t\t" + str(self.timestamp) + "\n"
-        block_rep += "\tproof:\t\t" + str(self.proof) + "\n"
-        block_rep += "\tprevious hash:\t" + str(self.previous_hash) + "\n"
+        block_representation =  f"\n| {'=' * 80}\n"
+        block_representation += f"| {colorize('index', 'bold')}: \t {str(self.index)} \n"
+        block_representation += f"| {colorize('time', 'bold')}: \t {str(self.timestamp)} \n"
+        block_representation += f"| {colorize('proof', 'bold')}: \t {str(self.proof)} \n"
+        block_representation += f"| {colorize('prev. hash', 'bold')}: \t {str(self.previous_hash)} \n"
+        block_representation += f"{str(self.data)}\n"
+        block_representation += f"| {'=' * 80}\n"
 
-        return block_rep
+        return block_representation
 
 
     def __bytes__(self) -> bytes:
