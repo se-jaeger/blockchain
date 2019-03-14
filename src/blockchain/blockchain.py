@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class Blockchain(object):
 
-    def __init__(self, path_to_chain: str, json_format: bool) -> None:
+    def __init__(self, path_to_chain: str, json_format: bool, force_new_chain: bool) -> None:
         """
 
         Constructor for new ``Blockchain`` object.
@@ -35,7 +35,7 @@ class Blockchain(object):
         self._json_format = json_format
 
         # if local chain exists, load it
-        if os.path.isfile(self.path_to_chain):
+        if os.path.isfile(self.path_to_chain) and not force_new_chain:
 
             logger.debug(f"Load existing chain from disc ...")
             self.load_chain()

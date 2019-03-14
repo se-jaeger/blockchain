@@ -1,3 +1,4 @@
+import time
 import click
 import signal
 import logging
@@ -55,7 +56,8 @@ def get():
 @click.option("--chain_serialization", default="json", type=click.types.Choice(["json", "pickle"]), help=CHAIN_SERIALIZATION_HELP)
 @click.option("--difficulty", default=DEFAULT_DIFFICULTY, type=int, help=DIFFICULTY_HELP)
 @click.option("--neighbours", default=DEFAULT_NEIGHBOURS, type=str, help=NEIGHBOURS_HELP)
-def start(chain_path: str, chain_serialization: str, port: int, difficulty: int, neighbours: str):
+@click.option("--force_new_chain", is_flag=True, type=bool, help=NEIGHBOURS_HELP)
+def start(chain_path: str, chain_serialization: str, port: int, difficulty: int, neighbours: str, force_new_chain: bool):
     """
     Starts a local miner.
     """
@@ -75,7 +77,10 @@ def start(chain_path: str, chain_serialization: str, port: int, difficulty: int,
         neighbours = neighbours.split(",")
 
 
-    miner = Miner(path_to_chain=chain_path, json_format=json_format, port=port, difficulty=difficulty, neighbours=neighbours)
+    logger.debug(f"======================================== STARTED AT {time.strftime('%d.%m.%Y %H:%M:%S', time.localtime())} ========================================\n\n\n")
+
+
+    miner = Miner(path_to_chain=chain_path, json_format=json_format, port=port, difficulty=difficulty, neighbours=neighbours, force_new_chain=force_new_chain)
 
     try:
         signal.signal(signal.SIGTERM, signal_handler)
@@ -89,7 +94,8 @@ def start(chain_path: str, chain_serialization: str, port: int, difficulty: int,
 
         miner.stop_mining()
 
-        logger.debug("======================================== FINISHED ========================================\n\n\n")
+
+        logger.debug(f"======================================== FINISHED AT {time.strftime('%d.%m.%Y %H:%M:%S', time.localtime())} ========================================\n\n\n")
 
 
 @cli.command()
@@ -126,7 +132,7 @@ def chain(host, port):
     if response.status_code == HTTP_OK:
 
         json = response.json()
-        length = json['length']
+        length = json["length"]
         chain = jsonpickle.decode(json["chain"])
 
         click.echo(click.style(f"\nChain with length: {length}\n", fg="green"))
@@ -149,7 +155,7 @@ def neighbours(host, port):
     if response.status_code == HTTP_OK:
 
         json = response.json()
-        length = json['length']
+        length = json["length"]
         neighbours = jsonpickle.decode(json["neighbours"])
 
         click.echo(click.style(f"\nActual are {length} neighbours available.\n", fg="green"))
