@@ -40,6 +40,11 @@ MINER_LOG_SIZE = 1 * 1024 * 1024 # 2 MB
 MINER_LOG_FILE = "miner.log"
 LOGGING_FORMAT = "[%(asctime)s - %(filename)-17s:%(lineno)-4s - %(levelname)-7s - %(funcName)-25s]: %(message)s"
 
+COLOR_GREEN = "\033[92m"
+COLOR_RED = "\033[91m"
+COLOR_BOLD = "\033[1m"
+COLOR_END = "\033[0m"
+
 
 ############## CLI Help messages ##############
 

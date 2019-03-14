@@ -5,8 +5,8 @@ import threading
 from datetime import timedelta
 from urllib.parse import urlparse
 
-from src.utils.constants import DEFAULT_PORT
 from src.utils.errors import ProgramKilledError, PortValueError
+from src.utils.constants import DEFAULT_PORT, COLOR_BOLD, COLOR_END, COLOR_GREEN, COLOR_RED
 
 
 logger = logging.getLogger(__name__)
@@ -107,6 +107,22 @@ def create_proper_url_string(host_port: (str, int), path: str) -> str:
         path = path[len("/"):]
 
     return f"http://{host_port[0]}:{host_port[1]}/{path}"
+
+
+def colorize(text: str, color: str) -> str:
+
+    if color == "bold":
+        return f"{COLOR_BOLD}{text}{COLOR_END}"
+
+    elif color == "green":
+        return f"{COLOR_GREEN}{text}{COLOR_END}"
+
+    elif color == "red":
+        return f"{COLOR_RED}{text}{COLOR_END}"
+
+    else:
+        logger.warning(f"Could not find handle for type: '{color}'")
+        return text
 
 
 def signal_handler(signum, frame):
