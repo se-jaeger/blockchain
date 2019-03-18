@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 class Miner(object):
 
-    def __init__(self, path_to_chain: str, json_format: bool, port: int, difficulty: int, neighbours: list = []) -> None:
+    def __init__(self, path_to_chain: str, json_format: bool, port: int, difficulty: int, neighbours: list, force_new_chain: bool) -> None:
         """
 
         Constructor for new ``Miner`` object.
@@ -33,6 +33,7 @@ class Miner(object):
             port (int): Port of neighbour.
             difficulty (int): Amount of trailing 0s for proof of work
             neighbours (list): List of known neighbours, e.g. ``["localhost:23456", "miner0815:6666"]``
+            force_new_chain (bool): Force miner to create a new chain instead of use the existing one.
         """
 
         logger.info("Create 'Miner' object ...")
@@ -89,7 +90,7 @@ class Miner(object):
         self._server_process = None
         self._difficulty = difficulty
         self._not_processed_messages = set()
-        self._blockchain = Blockchain(path_to_chain=encode_file_path_properly(path_to_chain), json_format=json_format)
+        self._blockchain = Blockchain(path_to_chain=encode_file_path_properly(path_to_chain), json_format=json_format, force_new_chain= force_new_chain)
 
         logger.debug(f"Check chain ...")
 

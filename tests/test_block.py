@@ -2,13 +2,13 @@ import pytest
 
 from src.blockchain.data import Data
 from src.blockchain.block import Block
-from src.utils.constants import GENESIS_BLOCK
+from src.blockchain.blockchain import Blockchain
 
 
 data = Data("dummy data")
 same_data = Data("dummy data")
 dummy_prev_hash = "e59be601c9213694f0b72534148199b24d1ed7c1c29c02ba4602e780015a7663"
-another_genesis_block = Block(index=0, data=GENESIS_BLOCK.data, proof=None, previous_hash=None)
+another_genesis_block = Block(index=0, data=Blockchain.genesis_block.data, proof=None, previous_hash=None)
 
 
 def test_constructor():
@@ -68,16 +68,16 @@ def test_timestamp():
 
 def test_equality():
 
-    assert GENESIS_BLOCK == GENESIS_BLOCK
+    assert Blockchain.genesis_block == Blockchain.genesis_block
     assert another_genesis_block == another_genesis_block
-    assert GENESIS_BLOCK != another_genesis_block
+    assert Blockchain.genesis_block != another_genesis_block
 
 
 def test_negative_equality():
 
-    assert GENESIS_BLOCK != another_genesis_block
+    assert Blockchain.genesis_block != another_genesis_block
 
     string_object = "This is a random String object"
 
-    assert GENESIS_BLOCK != string_object
+    assert Blockchain.genesis_block != string_object
     assert string_object != another_genesis_block

@@ -2,13 +2,14 @@ import os
 import time
 import pickle
 import logging
+import hashlib
 import jsonpickle
 
-from src.utils.constants import *
 from src.blockchain.data import Data
 from src.blockchain.block import Block
 from src.utils.errors import ChainNotFoundError
 from src.utils.utils import encode_file_path_properly
+from src.utils.constants import GENESIS_BLOCK_PREV_HASH, GENESIS_BLOCK_PROOF, GENESIS_BLOCK_DATA, GENESIS_BLOCK_INDEX
 
 
 logger = logging.getLogger(__name__)
@@ -16,7 +17,10 @@ logger = logging.getLogger(__name__)
 
 class Blockchain(object):
 
-    def __init__(self, path_to_chain: str, json_format: bool) -> None:
+    genesis_block = Block(index=GENESIS_BLOCK_INDEX, data=Data(GENESIS_BLOCK_DATA), proof=GENESIS_BLOCK_PROOF, previous_hash=GENESIS_BLOCK_PREV_HASH)
+    genesis_block_hash = hashlib.sha256(bytes(genesis_block)).hexdigest()
+
+    def __init__(self, path_to_chain: str, json_format: bool, force_new_chain: bool) -> None:
         """
 
         Constructor for new ``Blockchain`` object.
@@ -35,7 +39,7 @@ class Blockchain(object):
         self._json_format = json_format
 
         # if local chain exists, load it
-        if os.path.isfile(self.path_to_chain):
+        if os.path.isfile(self.path_to_chain) and not force_new_chain:
 
             logger.debug(f"Load existing chain from disc ...")
             self.load_chain()
@@ -45,7 +49,8 @@ class Blockchain(object):
             logger.debug(f"Create new chain ...")
 
             # if no local chain exists, create the genesis block
-            self.chain = [GENESIS_BLOCK]
+
+            self.chain = [self.genesis_block]
             logger.debug(f"New chain created.")
 
         logger.info("Created 'Blockchain' object.")
