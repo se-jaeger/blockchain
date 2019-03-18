@@ -51,7 +51,7 @@ class Data(object):
         data_representation =  f"| \t\t{'_' * 66}\n"
         data_representation += f"| {colorize('data', 'bold')}:\t\t| id: \t{self.id}\n"
         data_representation += f"| \t\t| message: {self.message}\n"
-        data_representation += f"| \t\t {'_' * 65}"
+        data_representation += f"| \t\t{'_' * 65}"
 
         return data_representation
 
