@@ -1,8 +1,10 @@
 import pytest
 
 from src.blockchain.data import Data
-from src.utils.constants import GENESIS_DATA
+from src.utils.constants import GENESIS_BLOCK_DATA
 
+
+genesis_data = Data(GENESIS_BLOCK_DATA)
 
 
 data = Data("dummy data")
@@ -31,13 +33,13 @@ def test_constructor_invalid(input):
 def test__hash__():
 
     data_hash = data.__hash__()
-    genesis_data_hash = GENESIS_DATA.__hash__()
+    genesis_data_hash = genesis_data.__hash__()
 
     assert data_hash != genesis_data_hash
 
     # hashing again -> same hash
     assert data_hash == hash(data)
-    assert genesis_data_hash == hash(GENESIS_DATA)
+    assert genesis_data_hash == hash(genesis_data)
 
     # same data -> different hash
     assert hash(data) != hash(same_data)
@@ -45,6 +47,6 @@ def test__hash__():
 
 def test__eq__():
 
-    assert GENESIS_DATA == GENESIS_DATA
+    assert genesis_data == genesis_data
     assert data == data
-    assert GENESIS_DATA != data
+    assert genesis_data != data
