@@ -27,20 +27,6 @@ def miner():
     Gives the opportunity to use the miner implementation.
     """
 
-    logger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(LOGGING_FORMAT)
-
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
-    console_handler.setFormatter(formatter)
-
-    rotating_file_handler = RotatingFileHandler(MINER_LOG_FILE, maxBytes=MINER_LOG_SIZE, backupCount=3)
-    rotating_file_handler.setLevel(logging.DEBUG)
-    rotating_file_handler.setFormatter(formatter)
-
-    logger.addHandler(rotating_file_handler)
-    logger.addHandler(console_handler)
-
 
 @cli.group()
 def get():
@@ -77,8 +63,23 @@ def start(chain_path: str, chain_serialization: str, port: int, difficulty: int,
         neighbours = neighbours.split(",")
 
 
-    logger.debug(f"======================================== STARTED AT {time.strftime('%d.%m.%Y %H:%M:%S', time.localtime())} ========================================\n\n\n")
+    # Settings for Logging
+    logger.setLevel(logging.DEBUG)
+    formatter = logging.Formatter(LOGGING_FORMAT)
 
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    console_handler.setFormatter(formatter)
+
+    rotating_file_handler = RotatingFileHandler(f"{os.path.dirname(encode_file_path_properly(chain_path))}/{MINER_LOG_FILE}", maxBytes=MINER_LOG_SIZE, backupCount=3)
+    rotating_file_handler.setLevel(logging.DEBUG)
+    rotating_file_handler.setFormatter(formatter)
+
+    logger.addHandler(rotating_file_handler)
+    logger.addHandler(console_handler)
+
+
+    logger.debug(f"======================================== STARTED AT {time.strftime('%d.%m.%Y %H:%M:%S', time.localtime())} ========================================\n\n\n")
 
     miner = Miner(path_to_chain=chain_path, json_format=json_format, port=port, difficulty=difficulty, neighbours=neighbours, force_new_chain=force_new_chain)
 
@@ -93,7 +94,6 @@ def start(chain_path: str, chain_serialization: str, port: int, difficulty: int,
         logger.error(f"Caught 'ProgramKilledError' -> Shutting down miner.")
 
         miner.stop()
-
 
         logger.debug(f"======================================== FINISHED AT {time.strftime('%d.%m.%Y %H:%M:%S', time.localtime())} ========================================\n\n\n")
 
