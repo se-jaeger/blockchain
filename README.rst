@@ -5,11 +5,20 @@ Blockchain
 Simple Blockchain implementation in Python to get familiar with Python and the basic concepts of Blockchains.
 
 
+Documentation
+=============
+
+The `documentation <https://blockchain-by-sebastian.readthedocs.io/en/latest/>`_  for this project is hosted by `Read the Docs <https://readthedocs.org>`_.
+
+
 Build
 =====
 .. image:: https://travis-ci.com/se-jaeger/blockchain.svg?token=zzxZGrv6BMyvkUJtbozm&branch=master
     :target: https://travis-ci.com/se-jaeger/blockchain
 
+.. image:: https://readthedocs.org/projects/blockchain-by-sebastian/badge/?version=latest
+    :target: https://blockchain-by-sebastian.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
 
 Metrics
 -------
@@ -39,26 +48,6 @@ Quality
 .. image:: https://sonarcloud.io/api/project_badges/measure?project=Blockchain&metric=reliability_rating
 
 .. image:: https://sonarcloud.io/api/project_badges/measure?project=Blockchain&metric=security_rating
-
-
-Install and Run the Project
-===========================
-
-The actual fastest and easiest way to install this project is as follows.
-
-1. Clone this repository: ``git clone git@github.com:se-jaeger/blockchain.git``
-2. Open the clone directory: ``cd blockchain``
-3. Create a virtual env: ``python -m venv venv``
-4. Activate the virtual env: ``source venv/bin/activate``
-5. Install all dependencies: ``pip install -r requirements.txt``
-6. Install the ``blockchain`` CLI, run the following in the root directory of this project: ``pip install -e .``
-7. Check available commands: ``blockchain --help``
-
-
-Description
-===========
-
-A longer description of your project goes here...
 
 
 Note
