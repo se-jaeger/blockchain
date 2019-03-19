@@ -28,7 +28,12 @@ def start_server(queue: Queue, port: int):
         if not message:
 
             logger.debug(f"URL Parameter: '{MESSAGE_PARAM}' is missing.")
-            return jsonify({"message": "No Message added! - Missing data..."}), HTTP_BAD
+
+            response = {"message": "No Message added!",
+                        "more_information": "Missing data."
+                        }
+
+            return jsonify(response), HTTP_BAD
 
         queue.put_nowait((ADD_KEY, message))
 
