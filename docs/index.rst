@@ -2,16 +2,41 @@
 Blockchain
 ==========
 
-This is the documentation of **Blockchain**.
-
-
-How does this Blockchain implementation work?
-=============================================
+This is the documentation of **Blockchain** a simple implementation in Python to get familiar with Python and the basic concepts of Blockchains.
 
 **Short Disclaimer:**
 It is just a private ``Python 3.7.2`` project. Its purposes is to get a little bit familiar with the Python projects and the concepts of Blockchains.
 Therefore it is not intended for production usage, and any warranties are excluded.
 
+
+Getting started
+===============
+
+The easiest way to get up a single miner or a whole blockchain network is to use Docker. This repository offers the needed ``Dockerfile`` and ``docker-compose.yaml`` in the directory ``docker``.
+Do the following steps:
+
+1. Change to ``docker`` directory
+2. Run ``docker build --no-cache -t blockchain .``
+3. Run ``docker-compose up``
+
+This starts a Blockchain network with 3 miners and forwards their ports (12345, 12346, 12347) to your host system.
+It uses the directory ``~/.blockchain/`` on your host system to save the created files for each miner.
+
+
+Install the CLI locally
+-----------------------
+
+1. Clone this repository: ``git clone git@github.com:se-jaeger/blockchain.git``
+2. Open the clone directory: ``cd blockchain``
+3. Create a virtual env: ``python -m venv venv``
+4. Activate the virtual env: ``source venv/bin/activate``
+5. Install all dependencies: ``pip install -r requirements.txt``
+6. Install the ``blockchain`` CLI, run the following in the root directory of this project: ``pip install -e .``
+7. Check available commands: ``blockchain --help``
+
+
+How does this Blockchain implementation work?
+=============================================
 
 This implementation produces a simple ``CLI`` and a ``Miner``. It is necessary to get up and running a local Miner.
 The CLI then uses the Miners ``REST`` interface to interact with it.

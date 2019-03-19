@@ -1,0 +1,27 @@
+
+
+version: '3'
+services:
+  miner1:
+    image: blockchain
+    ports:
+      - "12345:12345"
+    volumes:
+      - "~/.blockchain/miner1/:/root/"
+    command: miner start ~/test.chain --port 12345 --neighbours miner2:12346 --difficulty 6 --force_new_chain
+
+  miner2:
+    image: blockchain
+    ports:
+      - "12346:12346"
+    volumes:
+      - "~/.blockchain/miner2/:/root/"
+    command: miner start ~/test.chain --port 12346 --neighbours miner3:12347 --difficulty 6 --force_new_chain
+
+  miner3:
+    image: blockchain
+    ports:
+      - "12347:12347"
+    volumes:
+      - "~/.blockchain/miner3/:/root/"
+    command: miner start ~/test.chain --port 12347 --neighbours miner1:12345 --difficulty 6 --force_new_chain
