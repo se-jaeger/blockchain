@@ -42,7 +42,7 @@ class Blockchain(object):
         if os.path.isfile(self.path_to_chain) and not force_new_chain:
 
             logger.debug(f"Load existing chain from disc ...")
-            self.load_chain()
+            self._load_chain()
             logger.debug(f"Existing chain loaded.")
 
         else:
@@ -57,7 +57,7 @@ class Blockchain(object):
         logger.debug(f"'Blockchain' object created.")
 
 
-    def load_chain(self) -> None:
+    def _load_chain(self) -> None:
         """
 
         Helper method to load chain from disk. Raises an error if no chain is found.

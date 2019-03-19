@@ -86,13 +86,13 @@ def start(chain_path: str, chain_serialization: str, port: int, difficulty: int,
         signal.signal(signal.SIGTERM, signal_handler)
         signal.signal(signal.SIGINT, signal_handler)
 
-        miner.start_mining()
+        miner.start()
 
     except ProgramKilledError:
 
         logger.error(f"Caught 'ProgramKilledError' -> Shutting down miner.")
 
-        miner.stop_mining()
+        miner.stop()
 
 
         logger.debug(f"======================================== FINISHED AT {time.strftime('%d.%m.%Y %H:%M:%S', time.localtime())} ========================================\n\n\n")

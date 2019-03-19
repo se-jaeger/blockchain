@@ -89,13 +89,13 @@ class Miner(object):
         self._neighbours = set()
         self._server_process = None
         self._difficulty = difficulty
-        self._not_processed_messages = set()
+        self._unprocessed_messages = set()
         self._blockchain = Blockchain(path_to_chain=encode_file_path_properly(path_to_chain), json_format=json_format, force_new_chain= force_new_chain)
 
         logger.debug(f"Check chain ...")
 
         # check if chain is valid
-        if not self.is_chain_valid():
+        if not self._is_chain_valid():
 
             #TODO: test
             raise ChainNotValidError("Local chain is not valid!")
@@ -115,7 +115,7 @@ class Miner(object):
 
 
 
-    def start_mining(self) -> None:
+    def start(self) -> None:
         """
         Starts some background ``Job`` s for the Gossip Protocol, Chain syncing, Data syncing, communication thread as well as the server functionalities as process.
         Starts the blocking function ``mine()``.
@@ -123,19 +123,19 @@ class Miner(object):
 
         logger.info("Configure and start 'Miner' background tasks ...")
 
-        update_neighbour_job = ("Gossip Job", Job(interval=timedelta(seconds=GOSSIP_TIME_SECONDS), execute=self.update_neighbours))
+        update_neighbour_job = ("Gossip Job", Job(interval=timedelta(seconds=GOSSIP_TIME_SECONDS), execute=self._update_neighbours))
         logger.debug(f"Background thread configured: '{update_neighbour_job[0]}' - interval: {GOSSIP_TIME_SECONDS} seconds.")
 
-        check_for_longest_chain_job = ("Sync Chain Job", Job(interval=timedelta(seconds=CHAIN_SYNC_TIME_SECONDS), execute=self.check_for_longest_chain))
+        check_for_longest_chain_job = ("Sync Chain Job", Job(interval=timedelta(seconds=CHAIN_SYNC_TIME_SECONDS), execute=self._check_for_longest_chain))
         logger.debug(f"Background thread configured: '{check_for_longest_chain_job[0]}' - interval: {CHAIN_SYNC_TIME_SECONDS} seconds.")
 
-        fetch_unprocessed_data_job = ("Sync Unprocessed Data Job)", Job(interval=timedelta(seconds=UNPROCESSED_DATA_SYNC_TIME_SECONDS), execute=self.fetch_unprocessed_data))
+        fetch_unprocessed_data_job = ("Sync Unprocessed Data Job)", Job(interval=timedelta(seconds=UNPROCESSED_DATA_SYNC_TIME_SECONDS), execute=self._fetch_unprocessed_data))
         logger.debug(f"Background thread configured: '{fetch_unprocessed_data_job[0]}' - interval: {UNPROCESSED_DATA_SYNC_TIME_SECONDS} seconds.")
 
-        backup_local_chain_job = ("Backup Local Chain Job", Job(interval=timedelta(seconds=BACKUP_LOCAL_CHAIN_TIME_SECONDS), execute=self.backup_local_chain))
+        backup_local_chain_job = ("Backup Local Chain Job", Job(interval=timedelta(seconds=BACKUP_LOCAL_CHAIN_TIME_SECONDS), execute=self._backup_local_chain))
         logger.debug(f"Background thread configured: '{backup_local_chain_job[0]}' - interval: {BACKUP_LOCAL_CHAIN_TIME_SECONDS} seconds.")
 
-        communicate_job = ("Communication Job", Job(interval=timedelta(seconds=0), execute=self.communicate))
+        communicate_job = ("Communication Job", Job(interval=timedelta(seconds=0), execute=self._communicate))
         logger.debug(f"Background thread configured: '{communicate_job[0]}'.")
 
         self._queue = Queue()
@@ -171,10 +171,10 @@ class Miner(object):
         self.jobs.append(communicate_job)
 
         logger.debug("Start mining ...")
-        self.mine()
+        self._mine()
 
 
-    def stop_mining(self) -> None:
+    def stop(self) -> None:
         """
         Function that gets called when Python was killed. Takes care to shutting down all threads/process and saves the chain to disc.
         """
@@ -199,7 +199,7 @@ class Miner(object):
         logger.info("Shutting down routine done.")
 
 
-    def communicate(self) -> None:
+    def _communicate(self) -> None:
         """
         Periodical thread to communicate with server process.
         """
@@ -212,7 +212,7 @@ class Miner(object):
             if ADD_KEY == message[0]:
 
                 logger.debug(f"Found handle for message with key: '{ADD_KEY}'")
-                self.new_message(message[1])
+                self._new_message(message[1])
 
             elif SEND_CHAIN_KEY == message[0]:
 
@@ -239,7 +239,7 @@ class Miner(object):
                 logger.warning(f"Could not find handle for message: '{message[0]}'")
 
 
-    def proof_of_work(self, last_proof: int, difficulty: int) -> int:
+    def _proof_of_work(self, last_proof: int, difficulty: int) -> int:
         """
         Simple proof of work:
 
@@ -263,7 +263,7 @@ class Miner(object):
 
         proof = 0
 
-        while not self.is_proof_of_work_valid(last_proof, proof, difficulty):
+        while not self._is_proof_of_work_valid(last_proof, proof, difficulty):
             proof += 1
 
         logger.debug(f"Found Proof of Work - last_proof: {last_proof}, difficulty: {difficulty}.")
@@ -272,7 +272,7 @@ class Miner(object):
         return proof
 
 
-    def is_chain_valid(self, chain: list = None) -> bool:
+    def _is_chain_valid(self, chain: list = None) -> bool:
         """
         Checks if the given ``chain`` satisfies the following rules:
             1. The first (genesis) block:
@@ -318,11 +318,11 @@ class Miner(object):
 
             # rules for any other block
             else:
-                previous_hash = Miner.hash(previous_block)
+                previous_hash = Miner._hash(previous_block)
 
-                if block.index != index or block.previous_hash != previous_hash or not self.is_proof_of_work_valid(previous_block.proof, block.proof, self.difficulty) or previous_block.timestamp >= block.timestamp:
+                if block.index != index or block.previous_hash != previous_hash or not self._is_proof_of_work_valid(previous_block.proof, block.proof, self.difficulty) or previous_block.timestamp >= block.timestamp:
 
-                    logger.debug(f"Block with index: {block.index} ist not valid: -> What is wrong? index: {block.index != index}, previous_hash: {block.previous_hash != previous_hash}, PoW valid: {self.is_proof_of_work_valid(previous_block.proof, block.proof, self.difficulty)}, timestamp: {previous_block.timestamp >= block.timestamp}.")
+                    logger.debug(f"Block with index: {block.index} ist not valid: -> What is wrong? index: {block.index != index}, previous_hash: {block.previous_hash != previous_hash}, PoW valid: {self._is_proof_of_work_valid(previous_block.proof, block.proof, self.difficulty)}, timestamp: {previous_block.timestamp >= block.timestamp}.")
 
                     # block ist not valid! => wrong chain
                     return False
@@ -333,7 +333,7 @@ class Miner(object):
         return True
 
 
-    def new_message(self, message: str) -> None:
+    def _new_message(self, message: str) -> None:
         """
             Adds the new ``message`` to its local cache.
 
@@ -350,7 +350,7 @@ class Miner(object):
         logger.info(f"New message added. - message: '{data.message}', id: '{data.id}'")
 
 
-    def backup_local_chain(self) -> None:
+    def _backup_local_chain(self) -> None:
         """
         Periodical thread to backup the local chain to disc.
         """
@@ -416,7 +416,7 @@ class Miner(object):
             _do_backup(hash_file_path, encoded_chain_hash)
 
 
-    def fetch_unprocessed_data(self) -> None:
+    def _fetch_unprocessed_data(self) -> None:
         """
             Periodical thread to get unprocessed data form neighbours.
             => Broadcasts unprocessed data around the network.
@@ -450,7 +450,7 @@ class Miner(object):
         logger.debug(f"Syncing unprocessed data done.")
 
 
-    def is_data_processed(self, data: Data) -> bool:
+    def _is_data_processed(self, data: Data) -> bool:
         """
         Checks if ``data`` is already in local chain.
 
@@ -477,7 +477,7 @@ class Miner(object):
         return False
 
 
-    def update_neighbours(self) -> None:
+    def _update_neighbours(self) -> None:
         """
         Periodical thread to update neighbours if limit is not exceeded.
         """
@@ -528,7 +528,7 @@ class Miner(object):
         logger.debug(f"Update neighbours done.")
 
 
-    def check_for_longest_chain(self) -> None:
+    def _check_for_longest_chain(self) -> None:
         """
         Consensus Algorithm:
 
@@ -556,7 +556,7 @@ class Miner(object):
                 length = len(chain)
 
                 # chain longer and valid?
-                if length > max_length and self.is_chain_valid(chain):
+                if length > max_length and self._is_chain_valid(chain):
 
                     logger.debug(f"New chain is longer. - neighbour: '{neighbour}', length of old chain: '{max_length}', length of chain: '{length}'")
                     max_length = length
@@ -579,7 +579,7 @@ class Miner(object):
         logger.debug(f"Syncing chain done.")
 
 
-    def mine(self) -> None:
+    def _mine(self) -> None:
         """
         Blocking Mining loop.
 
@@ -596,16 +596,16 @@ class Miner(object):
                 data = self.unprocessed_data.pop()
                 logger.debug(f"There is local unprocessed data. - data.id: '{data.id}', data.message: '{data.message}'")
 
-                if not self.is_data_processed(data):
+                if not self._is_data_processed(data):
 
                     logger.debug(f"Data is not processed -> mine new block. - data.id: '{data.id}', data.message: '{data.message}'")
 
                     last_block = self.blockchain.last_block
                     last_proof = last_block.proof
-                    previous_hash = self.hash(last_block)
+                    previous_hash = self._hash(last_block)
 
                     # proof of work for new block
-                    proof = self.proof_of_work(last_proof, self.difficulty)
+                    proof = self._proof_of_work(last_proof, self.difficulty)
                     block = self.blockchain.add_new_block(data=data, proof=proof, previous_hash=previous_hash)
 
                     logger.debug(f"New Block mined. - block.index: {block.index}, block.proof: {block.proof}, block.previous_hash: {block.previous_hash}, block.timestamp: {block.timestamp}, block.data.id: {block.data.id}, block.data.message: {block.data.message}")
@@ -613,7 +613,7 @@ class Miner(object):
 
 
     @staticmethod
-    def hash(block: Block) -> str:
+    def _hash(block: Block) -> str:
         """
 
         Hash a ``Block`` object with SHA-256.
@@ -640,7 +640,7 @@ class Miner(object):
 
 
     @staticmethod
-    def is_proof_of_work_valid(last_proof: int, proof: int, difficulty: int) -> bool:
+    def _is_proof_of_work_valid(last_proof: int, proof: int, difficulty: int) -> bool:
         """
 
         Checks if the proof of work was correct.
@@ -681,12 +681,12 @@ class Miner(object):
 
     @property
     def unprocessed_data(self) -> set:
-        return self._not_processed_messages
+        return self._unprocessed_messages
 
 
     @unprocessed_data.setter
-    def unprocessed_data(self, not_processed_messages: set) -> None:
-        self._not_processed_messages = not_processed_messages
+    def unprocessed_data(self, unprocessed_messages: set) -> None:
+        self._unprocessed_messages = unprocessed_messages
 
 
     @property
@@ -710,5 +710,5 @@ class Miner(object):
 
 
     @property
-    def queue(self) -> Process:
+    def queue(self) -> Queue:
         return self._queue

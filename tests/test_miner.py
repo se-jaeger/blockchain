@@ -73,13 +73,13 @@ def test_hash(json_format, clean_chain_file_fixture):
 
     miner = Miner(path_to_chain=path_to_chain, json_format=json_format, port=DEFAULT_PORT, difficulty=DEFAULT_DIFFICULTY, neighbours=[], force_new_chain=False)
 
-    assert Blockchain.genesis_block_hash == miner.hash(Blockchain.genesis_block)
+    assert Blockchain.genesis_block_hash == miner._hash(Blockchain.genesis_block)
 
     # only Block objects are hashable by Miner objects
     with pytest.raises(ValueError) as error:
 
         string_object = "This is a random String object"
-        miner.hash(string_object)
+        miner._hash(string_object)
 
         # correct error?
         assert "Only `Block` objects are hashable!" == str(error.value)
@@ -89,20 +89,20 @@ def test_is_proof_of_work_valid():
 
     last_proof = Blockchain.genesis_block.proof
 
-    assert Miner.is_proof_of_work_valid(last_proof=last_proof, proof=1, difficulty=1)
-    assert Miner.is_proof_of_work_valid(last_proof=last_proof, proof=350, difficulty=2)
-    assert Miner.is_proof_of_work_valid(last_proof=last_proof, proof=3969, difficulty=3)
-    assert Miner.is_proof_of_work_valid(last_proof=last_proof, proof=15558, difficulty=4)
+    assert Miner._is_proof_of_work_valid(last_proof=last_proof, proof=1, difficulty=1)
+    assert Miner._is_proof_of_work_valid(last_proof=last_proof, proof=350, difficulty=2)
+    assert Miner._is_proof_of_work_valid(last_proof=last_proof, proof=3969, difficulty=3)
+    assert Miner._is_proof_of_work_valid(last_proof=last_proof, proof=15558, difficulty=4)
 
     # difficulty has to be a positive integer value
     with pytest.raises(ValueError) as error:
 
-        Miner.is_proof_of_work_valid(last_proof=last_proof, proof=16, difficulty=0)
+        Miner._is_proof_of_work_valid(last_proof=last_proof, proof=16, difficulty=0)
         assert "'difficulty' has to be a positive integer value." == str(error.value)
 
     with pytest.raises(ValueError) as error:
 
-        Miner.is_proof_of_work_valid(last_proof=last_proof, proof=16, difficulty=-1)
+        Miner._is_proof_of_work_valid(last_proof=last_proof, proof=16, difficulty=-1)
         assert "'difficulty' has to be a positive integer value." == str(error.value)
 
 
@@ -111,11 +111,11 @@ def test_proof_of_work(json_format, clean_chain_file_fixture):
 
     miner = Miner(path_to_chain=path_to_chain, json_format=json_format, port=DEFAULT_PORT, difficulty=DEFAULT_DIFFICULTY, neighbours=[], force_new_chain=False)
 
-    proof_of_work_difficulty_1 = miner.proof_of_work(last_proof=None, difficulty=1)
-    proof_of_work_difficulty_2 = miner.proof_of_work(last_proof=None, difficulty=2)
-    proof_of_work_difficulty_3 = miner.proof_of_work(last_proof=None, difficulty=3)
-    proof_of_work_difficulty_4 = miner.proof_of_work(last_proof=None, difficulty=4)
-    proof_of_work_difficulty_5 = miner.proof_of_work(last_proof=None, difficulty=5)
+    proof_of_work_difficulty_1 = miner._proof_of_work(last_proof=None, difficulty=1)
+    proof_of_work_difficulty_2 = miner._proof_of_work(last_proof=None, difficulty=2)
+    proof_of_work_difficulty_3 = miner._proof_of_work(last_proof=None, difficulty=3)
+    proof_of_work_difficulty_4 = miner._proof_of_work(last_proof=None, difficulty=4)
+    proof_of_work_difficulty_5 = miner._proof_of_work(last_proof=None, difficulty=5)
 
     assert proof_of_work_difficulty_1 == 1
     assert proof_of_work_difficulty_2 == 350
@@ -129,13 +129,13 @@ def test_is_chain_valid__valid_chain(json_format, clean_chain_file_fixture):
 
     miner = Miner(path_to_chain=path_to_chain, json_format=json_format, port=DEFAULT_PORT, difficulty=DEFAULT_DIFFICULTY, neighbours=[], force_new_chain=False)
 
-    genesis_hash = miner.hash(miner.blockchain.last_block)
+    genesis_hash = miner._hash(miner.blockchain.last_block)
     miner.blockchain.add_new_block(data=Data("Some test data."), proof=1406000, previous_hash=genesis_hash)
 
-    second_block_hash = miner.hash(miner.blockchain.last_block)
+    second_block_hash = miner._hash(miner.blockchain.last_block)
     miner.blockchain.add_new_block(data=Data("Some more test data."), proof=423135, previous_hash=second_block_hash)
 
-    assert miner.is_chain_valid()
+    assert miner._is_chain_valid()
 
 
 @pytest.mark.parametrize("json_format", constructor_json_format)
@@ -143,23 +143,23 @@ def test_is_chain_valid__wrong_genesis(json_format, clean_chain_file_fixture):
 
     miner = Miner(path_to_chain=path_to_chain, json_format=json_format, port=DEFAULT_PORT, difficulty=DEFAULT_DIFFICULTY, neighbours=[], force_new_chain=False)
 
-    genesis_hash = miner.hash(miner.blockchain.last_block)
+    genesis_hash = miner._hash(miner.blockchain.last_block)
     miner.blockchain.add_new_block(data=Data("Some test data."), proof=1406000, previous_hash=genesis_hash)
 
-    second_block_hash = miner.hash(miner.blockchain.last_block)
+    second_block_hash = miner._hash(miner.blockchain.last_block)
     miner.blockchain.add_new_block(data=Data("Some more test data."), proof=423135, previous_hash=second_block_hash)
 
     # wrong index, correct previous hash
     miner.blockchain.chain[0]._index = 1
-    assert not miner.is_chain_valid()
+    assert not miner._is_chain_valid()
 
     # wrong index, wrong previous hash
     miner.blockchain.chain[0]._previous_hash = "e59be601c9213694f0b72534148199b24d1ed7c1c29c02ba4602e780015a7663"
-    assert not miner.is_chain_valid()
+    assert not miner._is_chain_valid()
 
     # correct index, wrong previous hash
     miner.blockchain.chain[0]._index = 0
-    assert not miner.is_chain_valid()
+    assert not miner._is_chain_valid()
 
     # cleanup ..
     miner.blockchain.chain[0]._previous_hash = None
@@ -170,39 +170,39 @@ def test_is_chain_valid__wrong_block_1(json_format, clean_chain_file_fixture):
 
     miner = Miner(path_to_chain=path_to_chain, json_format=json_format, port=DEFAULT_PORT, difficulty=DEFAULT_DIFFICULTY, neighbours=[], force_new_chain=False)
 
-    genesis_hash = miner.hash(miner.blockchain.last_block)
+    genesis_hash = miner._hash(miner.blockchain.last_block)
     miner.blockchain.add_new_block(data=Data("Some test data."), proof=1406000, previous_hash=genesis_hash)
 
-    second_block_hash = miner.hash(miner.blockchain.last_block)
+    second_block_hash = miner._hash(miner.blockchain.last_block)
     miner.blockchain.add_new_block(data=Data("Some more test data."), proof=423135, previous_hash=second_block_hash)
 
     # wrong index, correct previous hash, correct proof of work, correct timestamp
     miner.blockchain.chain[1]._index = 42
-    assert not miner.is_chain_valid()
+    assert not miner._is_chain_valid()
 
     # wrong index, wrong previous hash, correct proof of work, correct timestamp
     miner.blockchain.chain[1]._previous_hash = None
-    assert not miner.is_chain_valid()
+    assert not miner._is_chain_valid()
 
     # wrong index, wrong previous hash, wrong proof of work, correct timestamp
     miner.blockchain.chain[1]._proof = 1234876423876
-    assert not miner.is_chain_valid()
+    assert not miner._is_chain_valid()
 
     # wrong index, wrong previous hash, wrong proof of work, wrong timestamp
     miner.blockchain.chain[1]._timestamp = miner.blockchain.chain[0].timestamp
-    assert not miner.is_chain_valid()
+    assert not miner._is_chain_valid()
 
     # correct index, wrong previous hash, wrong proof of work, wrong timestamp
     miner.blockchain.chain[1]._index = 1
-    assert not miner.is_chain_valid()
+    assert not miner._is_chain_valid()
 
     # correct index, correct previous hash, wrong proof of work, wrong timestamp
     miner.blockchain.chain[1]._previous_hash = genesis_hash
-    assert not miner.is_chain_valid()
+    assert not miner._is_chain_valid()
 
     # correct index, correct previous hash, correct proof of work, wrong timestamp
     miner.blockchain.chain[1]._proof = 1406000
-    assert not miner.is_chain_valid()
+    assert not miner._is_chain_valid()
 
 
 @pytest.mark.parametrize("json_format", constructor_json_format)
@@ -210,36 +210,36 @@ def test_is_chain_valid__wrong_block_2(json_format, clean_chain_file_fixture):
 
     miner = Miner(path_to_chain=path_to_chain, json_format=json_format, port=DEFAULT_PORT, difficulty=DEFAULT_DIFFICULTY, neighbours=[], force_new_chain=False)
 
-    genesis_hash = miner.hash(miner.blockchain.last_block)
+    genesis_hash = miner._hash(miner.blockchain.last_block)
     miner.blockchain.add_new_block(data=Data("Some test data."), proof=1406000, previous_hash=genesis_hash)
 
-    second_block_hash = miner.hash(miner.blockchain.last_block)
+    second_block_hash = miner._hash(miner.blockchain.last_block)
     miner.blockchain.add_new_block(data=Data("Some more test data."), proof=423135, previous_hash=second_block_hash)
 
     # wrong index, correct previous hash, correct proof of work, correct timestamp
     miner.blockchain.chain[2]._index = 42
-    assert not miner.is_chain_valid()
+    assert not miner._is_chain_valid()
 
     # wrong index, wrong previous hash, correct proof of work, correct timestamp
     miner.blockchain.chain[2]._previous_hash = None
-    assert not miner.is_chain_valid()
+    assert not miner._is_chain_valid()
 
     # wrong index, wrong previous hash, wrong proof of work, correct timestamp
     miner.blockchain.chain[2]._proof = 1234876423876
-    assert not miner.is_chain_valid()
+    assert not miner._is_chain_valid()
 
     # wrong index, wrong previous hash, wrong proof of work, wrong timestamp
     miner.blockchain.chain[2]._timestamp = miner.blockchain.chain[0].timestamp
-    assert not miner.is_chain_valid()
+    assert not miner._is_chain_valid()
 
     # correct index, wrong previous hash, wrong proof of work, wrong timestamp
     miner.blockchain.chain[2]._index = 2
-    assert not miner.is_chain_valid()
+    assert not miner._is_chain_valid()
 
     # correct index, correct previous hash, wrong proof of work, wrong timestamp
     miner.blockchain.chain[2]._previous_hash = second_block_hash
-    assert not miner.is_chain_valid()
+    assert not miner._is_chain_valid()
 
     # correct index, correct previous hash, correct proof of work, wrong timestamp
     miner.blockchain.chain[2]._proof = 423135
-    assert not miner.is_chain_valid()
+    assert not miner._is_chain_valid()
