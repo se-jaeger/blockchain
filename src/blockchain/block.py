@@ -36,10 +36,8 @@ class Block(object):
 
         if index == 0 and proof == None and previous_hash == None:
 
-            logger.debug("Genesis Block -> no type checks ...")
-
             # Genesis Block is ok. For all others check constraints.
-            pass
+            logger.debug("Genesis Block -> no type checks ...")
 
         else:
 
