@@ -64,10 +64,10 @@ Miner Implementation
 - ``/chain`` (GET): Returns the miners local chain.
     - ``response`` (200): JSON with the actual chain and its length.
 
-- ``neighbours`` (GET): Returns the miners neighbours.
+- ``/neighbours`` (GET): Returns the miners neighbours.
     - ``response`` (200): JSON with the actual neighbours and its length.
 
-- ``data`` (GET): Returns the miners local cache of unprocessed data.
+- ``/data`` (GET): Returns the miners local cache of unprocessed data.
     - ``response`` (200): JSON with the actual list of unprocessed data.
 
 |
@@ -75,7 +75,7 @@ Miner Implementation
 **The miner uses a set of files for normal operation:**
 
 - ``<filename>.chain``: Representation of the actual file.
-- ``<filename>.hash``: ``SHA-156`` of the actual chain file. Is used to check if the local chain differs from its on disc representation.
+- ``<filename>.hash``: ``SHA-256`` of the actual chain file. Is used to check if the local chain differs from its on disc representation.
 - ``<filename>_<date>_<time>``: Older versions of the chain file. Created at ``<date>_<time>``.
 - ``miner.log``: Log file and up to three backup files named ``miner.log.x`` where ``x`` is a number.
 
