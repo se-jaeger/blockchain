@@ -9,9 +9,6 @@ addons:
   sonarcloud:
     organization: "se-jaeger-github"
 
-virtualenv:
-  system_site_packages: true
-
 matrix:
   include:
     - env: DISTRIB="conda" PYTHON_VERSION="3.7" COVERAGE="false"
