@@ -5,6 +5,14 @@ Blockchain
 Simple Blockchain implementation in Python to get familiar with Python and the basic concepts of Blockchains.
 
 
+Docker
+======
+
+A built docker container is available at: https://github.com/se-jaeger/blockchain/packages/26280
+
+Or simply download it via docker CLI: `docker pull docker.pkg.github.com/se-jaeger/blockchain/blockchain:docker-base-layer`
+
+
 Documentation
 =============
 
