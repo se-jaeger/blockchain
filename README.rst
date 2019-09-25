@@ -10,7 +10,7 @@ Docker
 
 A built docker image is available at: https://github.com/se-jaeger/blockchain/packages/26280
 
-Or simply download it via docker CLI: ``docker pull docker.pkg.github.com/se-jaeger/blockchain/blockchain:docker-base-layer``
+Or simply download it via docker CLI: ``docker pull docker.pkg.github.com/se-jaeger/blockchain/blockchain:<commit-hash>``
 
 
 Documentation

@@ -1,0 +1,21 @@
+name: Build Docker Image CI
+
+on: [push]
+
+jobs:
+
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Build the Docker image
+      uses: actions/checkout@v1
+    - run: |
+        docker build . --file Dockerfile --tag docker.pkg.github.com/se-jaeger/blockchain/blockchain:$(git rev-parse --short HEAD)
+
+    - name: Login to GitHubs' Docker registry
+      run: |
+        docker login docker.pkg.github.com -p ${{ secrets.GITHUB_PUBLISH_TOKEN }} -u se-jaeger
+
+    - name: Publish the Docker image
+      run: |
+        docker push docker.pkg.github.com/se-jaeger/blockchain/blockchain:$(git rev-parse --short HEAD)
