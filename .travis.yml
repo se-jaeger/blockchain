@@ -23,7 +23,7 @@ before_script:
   - git config --global user.name "Sebastian Jäger"
 
 script:
-  - python setup.py test
+  - python setup.py test --addopts --cov-report=xml
   - sonar-scanner
 
 after_success:
