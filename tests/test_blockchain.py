@@ -2,10 +2,10 @@ import os
 import shutil
 import pytest
 
-from src.blockchain.data import Data
-from src.blockchain.block import Block
-from src.blockchain.blockchain import Blockchain
-from src.utils.utils import encode_file_path_properly
+from blockchain.data import Data
+from blockchain.block import Block
+from blockchain.blockchain import Blockchain
+from utils.utils import encode_file_path_properly
 
 
 constructor_json_format = [True, False]

@@ -5,8 +5,8 @@ import threading
 from datetime import timedelta
 from urllib.parse import urlparse
 
-from src.utils.errors import ProgramKilledError, PortValueError
-from src.utils.constants import DEFAULT_PORT, COLOR_BOLD, COLOR_END, COLOR_GREEN, COLOR_RED
+from utils.errors import ProgramKilledError, PortValueError
+from utils.constants import DEFAULT_PORT, COLOR_BOLD, COLOR_END, COLOR_GREEN, COLOR_RED
 
 
 logger = logging.getLogger(__name__)

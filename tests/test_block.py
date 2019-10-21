@@ -1,8 +1,8 @@
 import pytest
 
-from src.blockchain.data import Data
-from src.blockchain.block import Block
-from src.blockchain.blockchain import Blockchain
+from blockchain.data import Data
+from blockchain.block import Block
+from blockchain.blockchain import Blockchain
 
 
 data = Data("dummy data")

@@ -2,8 +2,8 @@ import requests
 import jsonpickle
 from flask import render_template, Blueprint
 
-from src.utils.utils import create_proper_url_string
-from src.utils.constants import DEFAULT_HOST, DEFAULT_PORT, CHAIN_ENDPOINT, HTTP_OK
+from utils.utils import create_proper_url_string
+from utils.constants import DEFAULT_HOST, DEFAULT_PORT, CHAIN_ENDPOINT, HTTP_OK
 
 
 blueprint = Blueprint('blockchain_blueprint', __name__, template_folder='templates', static_folder='static')

@@ -2,7 +2,7 @@ import logging
 
 from uuid import uuid4
 
-from src.utils.utils import colorize
+from utils.utils import colorize
 
 
 logger = logging.getLogger(__name__)

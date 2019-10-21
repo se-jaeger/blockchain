@@ -3,7 +3,7 @@ import logging
 from multiprocessing import Queue, Pipe
 from flask import Flask, jsonify, request
 
-from src.utils.constants import *
+from utils.constants import *
 
 
 logger = logging.getLogger(__name__)

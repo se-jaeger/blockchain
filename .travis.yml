@@ -16,6 +16,7 @@ matrix:
 install:
   - source tests/travis_install.sh
   - pip install -r requirements.txt
+  - pip install .
 
 before_script:
   - git config --global user.email "se.jaeger@web.de"

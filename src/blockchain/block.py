@@ -2,8 +2,8 @@ import logging
 
 from time import time
 
-from src.utils.utils import colorize
-from src.blockchain.data import Data
+from utils.utils import colorize
+from blockchain.data import Data
 
 
 logger = logging.getLogger(__name__)
