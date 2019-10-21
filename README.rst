@@ -11,6 +11,7 @@ Docker
 A built docker image is available at: https://github.com/se-jaeger/blockchain/packages/26280
 
 Or simply download it via docker CLI: ``docker pull docker.pkg.github.com/se-jaeger/blockchain/blockchain:<commit-hash>``
+It is necessary to login before you can download this image, see: https://help.github.com/en/articles/configuring-docker-for-use-with-github-package-registry#authenticating-to-github-package-registry
 
 
 Documentation

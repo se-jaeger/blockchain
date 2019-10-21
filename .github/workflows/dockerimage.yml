@@ -10,7 +10,7 @@ jobs:
     - name: Build the Docker image
       uses: actions/checkout@v1
     - run: |
-        docker build . --file Dockerfile --tag docker.pkg.github.com/se-jaeger/blockchain/blockchain:$(git rev-parse --short HEAD)
+        docker build . --file docker/Dockerfile --tag docker.pkg.github.com/se-jaeger/blockchain/blockchain:$(git rev-parse --short HEAD)
 
     - name: Login to GitHubs' Docker registry
       run: |

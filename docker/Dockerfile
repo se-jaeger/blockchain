@@ -1,8 +1,8 @@
 FROM python:3.7.2-stretch
 
-RUN git clone https://github.com/se-jaeger/blockchain.git
+COPY . /blockchain
 
-WORKDIR blockchain
+WORKDIR /blockchain
 
 RUN pip install -r requirements.txt
 RUN pip install -e .

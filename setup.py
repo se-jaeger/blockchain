@@ -22,8 +22,8 @@ except VersionConflict:
 if __name__ == "__main__":
 
     setup(use_pyscaffold=True,
-          packages=["blockchain", "cli", "client", "utils"],
-          package_dir={'blockchain': 'src/blockchain', 'cli': 'src/cli', 'client': 'src/client', 'utils': 'src/utils'},
+          packages=["blockchain", "cli", "client", "ui", "utils"],
+          package_dir={'blockchain': 'src/blockchain', 'cli': 'src/cli', 'client': 'src/client', 'ui': 'src/ui', 'utils': 'src/utils'},
           entry_points='''
             [console_scripts]
             blockchain=src.cli.cli:cli

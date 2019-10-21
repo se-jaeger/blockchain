@@ -21,3 +21,4 @@ pytest-cov
 jsonpickle
 Click
 flask
+Flask-WTF

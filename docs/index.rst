@@ -9,7 +9,7 @@ It is just a private ``Python 3.7.2`` project. Its purposes is to get a little b
 Therefore it is not intended for production usage, and any warranties are excluded.
 
 
-Getting started
+Getting Started
 ===============
 
 The easiest way to get up a single miner or a whole blockchain network is to use Docker. This repository offers the needed ``Dockerfile`` and ``docker-compose.yaml`` in the directory ``docker``.
@@ -23,7 +23,7 @@ This starts a Blockchain network with 3 miners and forwards their ports (12345, 
 It uses the directory ``~/.blockchain/`` on your host system to save the created files for each miner.
 
 
-Install the CLI locally
+Install the CLI Locally
 -----------------------
 
 1. Clone this repository: ``git clone git@github.com:se-jaeger/blockchain.git``
@@ -35,25 +35,18 @@ Install the CLI locally
 7. Check available commands: ``blockchain --help``
 
 
-How does this Blockchain implementation work?
+How Does This Blockchain Implementation Work?
 =============================================
 
-This implementation produces a simple ``CLI`` and a ``Miner``. It is necessary to get up and running a local Miner.
-The CLI then uses the Miners ``REST`` interface to interact with it.
+This implementation produces a simple ``CLI``, ``Miner`` and ``UI``. It is necessary to get up and running a local Miner.
+The CLI, as well as the UI, uses the Miners ``REST`` interface to interact with it.
 Created ``messages`` get synchronized with all other known Miners (``neighbours``) in the Blockchain network.
 A Miner asks all its neighbours periodically (if not max amount of neighbours is reached) to send unknown Miner and connects to them.
 Also in a periodical manner, Miner synchronizes their local Blockchain with the chains of there neighbours and use the longest valid chain in the network.
 
 
-Proof of Work
-=============
-
-A very simple implementation of a ``Proof of Work`` algorithm.
-The ``SHA-256`` hash value of the concatenation of the previous ``proof`` and the ``proof`` of the new Block has to start with ``difficulty`` trailing 0s.
-
-
 Miner Implementation
-====================
+--------------------
 
 **This Miner implementation offers a REST API with the following endpoints:**
 
@@ -89,6 +82,19 @@ Miner Implementation
 - ``Backup Local Chain Job`` (Thread): To backup the local chain to disc. Backups periodical the local chain to disc if they differ from each other.
 - ``Server Process`` (Process): Servers the Miners REST API in a separate process.
 - ``Communication Job`` (Thread): Communication thread to exchange message with the server process.
+
+
+Web-based User Interface
+------------------------
+
+The ``CLI`` offers a subcommand ``ui``, this allows to start an webserver for convenient interaction with the blockchain system.
+
+
+Proof of Work
+-------------
+
+A very simple implementation of a ``Proof of Work`` algorithm.
+The ``SHA-256`` hash value of the concatenation of the previous ``proof`` and the ``proof`` of the new Block has to start with ``difficulty`` trailing 0s.
 
 
 Improvements

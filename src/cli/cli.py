@@ -33,7 +33,20 @@ def get():
     """
     Subcommand to get some information about the actual state.
     """
-    pass
+
+
+@cli.command()
+@click.option("--port", default=DEFAULT_PORT, type=int, help=PORT_HELP)
+def ui(port: int):
+    """
+    Starts the web based user interface.
+    """
+
+    from src.ui import create_ui
+
+    # create an ui instance
+    ui = create_ui()
+    ui.run(debug=True, port=port)
 
 
 @miner.command()

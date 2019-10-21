@@ -1,0 +1,50 @@
+{%- extends "base.html" %}
+
+{% block styles -%}
+    {{super()}}
+{% endblock %}
+
+{% block title %}UI for Sebastians' Blockchain{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col"></div>
+        <div class="col-10">
+            <center>
+                <h1 class="display-3">Sebastians' Blockchain</h1>
+            </center>
+        </div>
+        <div class="col"></div>
+    </div>
+    {% for block in chain|reverse %}
+    <div class="row">
+        <div class="col"></div>
+        <div class="col-10">
+            <div class="card text-center mb-3">
+                <div class="card-header">
+                    <h4>
+                        Block {{ block.index }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <thead>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row"><p class="text-left text-wrap">Message</p></th>
+                                <td><p class="text-left text-wrap">{{ block.data.message }}</p></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer text-muted">
+                    <b>Created:</b> {{ format_timestamp(block.timestamp) }}
+                </div>
+            </div>
+        </div>
+        <div class="col"></div>
+    </div>
+    {% endfor %}
+
+{% endblock %}
