@@ -8,13 +8,13 @@ import jsonpickle
 from datetime import timedelta
 from multiprocessing import Process, Queue
 
-from utils.constants import *
-from blockchain.data import Data
-from blockchain.block import Block
-from client.server import start_server
-from utils.errors import ChainNotValidError
-from blockchain.blockchain import Blockchain
-from utils.utils import split_url_string, create_proper_url_string, Job, encode_file_path_properly
+from ..utils.constants import *
+from ..blockchain.data import Data
+from ..blockchain.block import Block
+from ..client.server import start_server
+from ..utils.errors import ChainNotValidError
+from ..blockchain.blockchain import Blockchain
+from ..utils.utils import split_url_string, create_proper_url_string, Job, encode_file_path_properly
 
 
 logger = logging.getLogger(__name__)

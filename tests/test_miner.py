@@ -2,11 +2,11 @@ import os
 import shutil
 import pytest
 
-from client.miner import Miner
-from blockchain.data import Data
-from blockchain.blockchain import Blockchain
-from utils.utils import encode_file_path_properly
-from utils.constants import DEFAULT_PORT, DEFAULT_DIFFICULTY
+from blockchain.client.miner import Miner
+from blockchain.blockchain.data import Data
+from blockchain.blockchain.blockchain import Blockchain
+from blockchain.utils.utils import encode_file_path_properly
+from blockchain.utils.constants import DEFAULT_PORT, DEFAULT_DIFFICULTY
 
 
 constructor_json_format = [True, False]

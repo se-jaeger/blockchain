@@ -5,11 +5,11 @@ import logging
 import hashlib
 import jsonpickle
 
-from blockchain.data import Data
-from blockchain.block import Block
-from utils.errors import ChainNotFoundError
-from utils.utils import encode_file_path_properly
-from utils.constants import GENESIS_BLOCK_PREV_HASH, GENESIS_BLOCK_PROOF, GENESIS_BLOCK_DATA, GENESIS_BLOCK_INDEX
+from ..blockchain.data import Data
+from ..blockchain.block import Block
+from ..utils.errors import ChainNotFoundError
+from ..utils.utils import encode_file_path_properly
+from ..utils.constants import GENESIS_BLOCK_PREV_HASH, GENESIS_BLOCK_PROOF, GENESIS_BLOCK_DATA, GENESIS_BLOCK_INDEX
 
 
 logger = logging.getLogger(__name__)

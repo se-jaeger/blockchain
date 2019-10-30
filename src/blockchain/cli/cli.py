@@ -7,9 +7,9 @@ import jsonpickle
 
 from logging.handlers import RotatingFileHandler
 
-from utils.utils import *
-from utils.constants import *
-from client.miner import Miner
+from ..utils.utils import *
+from ..utils.constants import *
+from ..client.miner import Miner
 
 
 logger = logging.getLogger()
@@ -42,7 +42,7 @@ def ui(port: int):
     Starts the web based user interface.
     """
 
-    from ui import create_ui
+    from ..ui import create_ui
 
     # create an ui instance
     ui = create_ui()

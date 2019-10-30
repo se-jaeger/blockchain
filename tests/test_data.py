@@ -1,7 +1,7 @@
 import pytest
 
-from blockchain.data import Data
-from utils.constants import GENESIS_BLOCK_DATA
+from blockchain.blockchain.data import Data
+from blockchain.utils.constants import GENESIS_BLOCK_DATA
 
 
 genesis_data = Data(GENESIS_BLOCK_DATA)
