@@ -16,6 +16,18 @@
         </div>
         <div class="col"></div>
     </div>
+    <div class="row">
+        <div class="col"></div>
+        <div class="col-10">
+            <form method="POST">
+                <div class="form-group">
+                    <textarea class="form-control" id="{{ form.message.id }}" name="{{ form.message.name }}" rows="3" placeholder="Message to be added." style="margin-top: 50px;"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-bottom: 50px;">Send!</button>
+            </form>
+        </div>
+        <div class="col"></div>
+    </div>
     {% for block in chain|reverse %}
     <div class="row">
         <div class="col"></div>
