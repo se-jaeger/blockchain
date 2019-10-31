@@ -36,7 +36,7 @@ def get():
 
 
 @cli.command()
-@click.option("--port", default=DEFAULT_PORT, type=int, help=PORT_HELP)
+@click.option("--port", default=5000, type=int, help=PORT_HELP)
 def ui(port: int):
     """
     Starts the web based user interface.
