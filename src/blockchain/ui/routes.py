@@ -1,35 +1,39 @@
 import requests
 import jsonpickle
-from flask import render_template, Blueprint
 
+from flask import render_template, request, Blueprint
+
+from .forms import MessageForm
 from ..utils.utils import create_proper_url_string
-from ..utils.constants import DEFAULT_HOST, DEFAULT_PORT, CHAIN_ENDPOINT, HTTP_OK
+from ..utils.constants import DEFAULT_HOST, DEFAULT_PORT, CHAIN_ENDPOINT, ADD_ENDPOINT, MESSAGE_PARAM
 
 
-blueprint = Blueprint('blockchain_blueprint', __name__, template_folder='templates', static_folder='static')
+blueprint = Blueprint("blockchain_blueprint", __name__, template_folder="templates", static_folder="static")
 
- 
-@blueprint.route('/')
+def format_timestamp(timestamp):
+    from datetime import datetime
+    return datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
+
+
+@blueprint.route("/", methods=["GET", "POST"])
 def main():
     """
     Root endpoint (``/``). Shows a representation of the current chain.
     """
-    
-    try:
-        response = requests.get(create_proper_url_string((DEFAULT_HOST, DEFAULT_PORT), CHAIN_ENDPOINT))
-    except:
-        return render_template("error.html")
 
-    if response.status_code == HTTP_OK:
+    try:
+        form = MessageForm(request.form)
+
+        if request.method == "POST" and form.validate():
+            requests.put(create_proper_url_string((DEFAULT_HOST, DEFAULT_PORT), ADD_ENDPOINT), params={MESSAGE_PARAM: form.message.data})
+
+        response = requests.get(create_proper_url_string((DEFAULT_HOST, DEFAULT_PORT), CHAIN_ENDPOINT))
         chain = jsonpickle.decode(response.json()["chain"])
 
-        def format_timestamp(timestamp):
-            from datetime import datetime
-            return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
+        return render_template("index.html", chain=chain, format_timestamp=format_timestamp, form=form)
 
-        return render_template("index.html", chain=chain, format_timestamp=format_timestamp)
-
-    else:
+    except Exception as error:
+        print(error)
         return render_template("error.html")
 
 
