@@ -1,6 +1,6 @@
 from flask import Flask
 
-from routes import blueprint
+from .routes import blueprint
 
 
 def create_ui():
